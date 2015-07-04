@@ -25,7 +25,7 @@ class debug extends p\PlugIn
 
     public function dump($content)
     {
-        $console=p\plug('debug-console');
+        $console=p\plug('debug_console');
         $console->dump($content, 'debug');
         $content=null;
         unset($content);
@@ -67,7 +67,7 @@ class debug extends p\PlugIn
             return $a;
         }
         $b=array();
-        $console=p\plug('debug-console');
+        $console=p\plug('debug_console');
         for ($i=0, $j=count($a);$i<$j;$i++) {
             if (is_object($a[$i])) {
                 $b[]= $console->escape('class '.get_class($a[$i]));
