@@ -11,8 +11,8 @@ class debug extends p\PlugIn
 
     public function d()
     {
-        ob_start();
         $a = func_get_args();
+        ob_start();
         call_user_func_array('var_dump', $a);
         $tmp=ob_get_contents();
         ob_end_clean();
