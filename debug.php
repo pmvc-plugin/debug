@@ -34,7 +34,7 @@ class debug extends p\PlugIn
         $arr =array();
         $i=1;
         foreach ($d as $k=>$v) {
-            $args = $this->parseArgus($v['args']);
+            $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
             if (!empty($v['object'])) {
                 $name = get_class($v['object']).$v['type'].$name;
