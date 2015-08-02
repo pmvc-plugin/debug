@@ -30,7 +30,7 @@ class debug extends p\PlugIn
         $content=null;
         unset($content);
         $d=debug_backtrace();
-        $d=array_slice($d, 4);
+        $d=array_slice($d, 7);
         $arr =array();
         $i=1;
         foreach ($d as $k=>$v) {
