@@ -58,7 +58,7 @@ class debug extends p\PlugIn
         if (is_object($s)) {
             $s = 'class '.get_class($s);
         }
-        return var_export($s, true);
+        return print_r($s, true);
     }
 
     public function parseArgus($a)
