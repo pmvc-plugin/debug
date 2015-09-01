@@ -12,10 +12,14 @@ class debug extends p\PlugIn
     public function d()
     {
         $a = func_get_args();
-        ob_start();
-        call_user_func_array('var_dump', $a);
-        $tmp=ob_get_contents();
-        ob_end_clean();
+        if (is_a($a[0], 'Exception')) {
+            $tmp = $a[0];
+        } else {
+            ob_start();
+            call_user_func_array('var_dump', $a);
+            $tmp=ob_get_contents();
+            ob_end_clean();
+        }
         if (!$this->run) {
             $this->run=true;
             $this->dump($tmp);
@@ -26,11 +30,17 @@ class debug extends p\PlugIn
     public function dump($content)
     {
         $console=p\plug('debug_console');
-        $console->dump($content, 'debug');
+        if (is_a($content, 'Exception')) {
+            $message = $content->getMessage();
+            $d = $content->getTrace();
+        } else {
+            $message =& $content;
+            $d=debug_backtrace();
+            $d=array_slice($d, 7);
+        }
+        $console->dump($message, 'debug');
         $content=null;
-        unset($content);
-        $d=debug_backtrace();
-        $d=array_slice($d, 7);
+        unset($content, $message);
         $arr =array();
         $i=1;
         foreach ($d as $k=>$v) {
