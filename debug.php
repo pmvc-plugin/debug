@@ -33,12 +33,14 @@ class debug extends p\PlugIn
         if (is_a($content, 'Exception')) {
             $message = $content->getMessage();
             $d = $content->getTrace();
+            $error_level = 'error';
         } else {
             $message =& $content;
             $d=debug_backtrace();
             $d=array_slice($d, 7);
+            $error_level = 'debug';
         }
-        $console->dump($message, 'debug');
+        $console->dump($message, $error_level);
         $content=null;
         unset($content, $message);
         $arr =array();
