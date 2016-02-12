@@ -12,9 +12,7 @@ class debug extends p\PlugIn
     public function d()
     {
         $a = func_get_args();
-        if (is_a($a[0], 'Exception')
-            || is_a($a[0], 'Error')
-            ) {
+        if ($this->isException($a[0])) {
             $tmp = $a[0];
         } else {
             ob_start();
@@ -32,7 +30,7 @@ class debug extends p\PlugIn
     public function dump($content)
     {
         $console=p\plug('debug_console');
-        if (is_a($content, 'Exception')) {
+        if ($this->isException($content)) {
             $message = $content->getMessage();
             $d = $content->getTrace();
             $error_level = 'error';
@@ -65,7 +63,21 @@ class debug extends p\PlugIn
         $arr=null;
         unset($arr);
     }
-    
+
+    /**
+     * Check is exception
+     * @param object $object
+     */
+    public function isException($object) 
+    {
+        if ( is_a($object, 'Exception')
+          || is_a($object, 'Error')
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     public function oneLine($s)
     {
