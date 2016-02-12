@@ -12,7 +12,9 @@ class debug extends p\PlugIn
     public function d()
     {
         $a = func_get_args();
-        if (is_a($a[0], 'Exception')) {
+        if (is_a($a[0], 'Exception')
+            || is_a($a[0], 'Error')
+            ) {
             $tmp = $a[0];
         } else {
             ob_start();
