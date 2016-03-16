@@ -9,6 +9,18 @@ class debug extends p\PlugIn
 {
     private $run=false;
 
+    public function init()
+    {
+        if (empty($this['output'])) {
+            $this['output'] = 'debug_console';
+        }
+        if (!p\exists($this['output'],'plugin')) {
+            $this['output'] = p\plug($this['output']);
+        } else {
+            return !trigger_error('Output plugin not found. ['.$this['output'].']');
+        }
+    }
+
     public function d()
     {
         $a = func_get_args();
@@ -29,7 +41,7 @@ class debug extends p\PlugIn
 
     public function dump($content)
     {
-        $console=p\plug('debug_console');
+        $console=$this['output'];
         if ($this->isException($content)) {
             $message = $content->getMessage();
             $d = $content->getTrace();
@@ -79,7 +91,7 @@ class debug extends p\PlugIn
         }
     }
     
-    public function oneLine($s)
+    public function objToStr($s)
     {
         if (is_object($s)) {
             $s = 'class '.get_class($s);
@@ -93,13 +105,13 @@ class debug extends p\PlugIn
             return $a;
         }
         $b=array();
-        $console=p\plug('debug_console');
+        $console=$this['output'];
         for ($i=0, $j=count($a);$i<$j;$i++) {
             if (is_object($a[$i])) {
                 $b[]= $console->escape('class '.get_class($a[$i]));
             } elseif (is_array($a[$i])) {
                 $c = reset($a[$i]);
-                $d = (is_object($c)) ? 'class '.get_class($c) : key($a[$i]).' => '. substr($this->oneLine($c), 0, 10);
+                $d = (is_object($c)) ? 'class '.get_class($c) : key($a[$i]).' => '. substr($this->objToStr($c), 0, 10);
                 $b[]='array '.$d;
             } else {
                 $b[]=$console->escape($a[$i]);
