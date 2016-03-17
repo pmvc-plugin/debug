@@ -14,6 +14,7 @@ class debug extends p\PlugIn
         if (empty($this['output'])) {
             $this['output'] = 'debug_console';
         }
+
         if (!p\exists($this['output'],'plugin')) {
             $this['output'] = p\plug($this['output']);
         } else {
@@ -41,6 +42,9 @@ class debug extends p\PlugIn
 
     public function dump($content)
     {
+        if (p\getOption(_VIEW_ENGINE)==='json') {
+            $this['output'] = p\plug('debug_store');
+        }
         $console=$this['output'];
         if ($this->isException($content)) {
             $message = $content->getMessage();
@@ -96,7 +100,7 @@ class debug extends p\PlugIn
         if (is_object($s)) {
             $s = 'class '.get_class($s);
         }
-        return print_r($s, true);
+        return print_r(trim($s), true);
     }
 
     public function parseArgus($a)
@@ -104,15 +108,17 @@ class debug extends p\PlugIn
         if (!is_array($a)) {
             return $a;
         }
-        $b=array();
+        $b=[];
         $console=$this['output'];
         for ($i=0, $j=count($a);$i<$j;$i++) {
             if (is_object($a[$i])) {
                 $b[]= $console->escape('class '.get_class($a[$i]));
             } elseif (is_array($a[$i])) {
                 $c = reset($a[$i]);
-                $d = (is_object($c)) ? 'class '.get_class($c) : key($a[$i]).' => '. substr($this->objToStr($c), 0, 10);
+                $d = key($a[$i]).' => '. substr($this->objToStr($c), 0, 30);
                 $b[]='array '.$d;
+            } elseif (is_null($a[$i])) {
+                $b[]='NULL';
             } else {
                 $b[]=$console->escape($a[$i]);
             }
