@@ -7,6 +7,12 @@
 # PMVC debug tool 
 ===============
 
+## Debug output plugin
+   1. https://github.com/pmvc-plugin/debug_store
+   1. https://github.com/pmvc-plugin/debug_console
+   * Todo
+      * Command-line output
+
 ## Install with Composer
 ### 1. Download composer
    * mkdir test_folder
