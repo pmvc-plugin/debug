@@ -1,7 +1,8 @@
 <?php
 namespace PMVC\PlugIn\debug;
-
 use PMVC as p;
+
+\PMVC\l(__DIR__.'/src/DebugDumpInterface.php');
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 
@@ -14,12 +15,22 @@ class debug extends p\PlugIn
         if (empty($this['output'])) {
             $this['output'] = 'debug_console';
         }
+    }
 
-        if (!p\exists($this['output'],'plugin')) {
-            $this['output'] = p\plug($this['output']);
-        } else {
-            return !trigger_error('Output plugin not found. ['.$this['output'].']');
+    public function getOutput()
+    {
+        $output = $this['output'];
+        if (p\getOption(_VIEW_ENGINE)==='json') {
+            $output = p\plug('debug_store');
         }
+        if (!is_object($output)) {
+            if (!p\exists($output,'plugin')) {
+                $output = $this['output'] = p\plug($output);
+            } else {
+                return !trigger_error('Output plugin not found. ['.$output.']');
+            }
+        }
+        return $output;
     }
 
     public function d()
@@ -42,10 +53,7 @@ class debug extends p\PlugIn
 
     public function dump($content)
     {
-        if (p\getOption(_VIEW_ENGINE)==='json') {
-            $this['output'] = p\plug('debug_store');
-        }
-        $console=$this['output'];
+        $console=$this->getOutput();
         if ($this->isException($content)) {
             $message = $content->getMessage();
             $d = $content->getTrace();
@@ -109,7 +117,7 @@ class debug extends p\PlugIn
             return $a;
         }
         $b=[];
-        $console=$this['output'];
+        $console=$this->getOutput();
         for ($i=0, $j=count($a);$i<$j;$i++) {
             if (is_object($a[$i])) {
                 $b[]= $console->escape('class '.get_class($a[$i]));
