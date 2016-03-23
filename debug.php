@@ -83,7 +83,7 @@ class debug extends p\PlugIn
         }
         $d=null;
         unset($d);
-        $console->dump($arr, 'info');
+        $console->dump($arr, 'trace');
         $arr=null;
         unset($arr);
     }
@@ -108,7 +108,7 @@ class debug extends p\PlugIn
         if (is_object($s)) {
             $s = 'class '.get_class($s);
         }
-        return print_r(trim($s), true);
+        return trim(print_r($s, true));
     }
 
     public function parseArgus($a)
@@ -132,5 +132,21 @@ class debug extends p\PlugIn
             }
         }
         return join(', ', $b);
+    }
+
+    public function getLevel($level)
+    {
+        $levels =  [
+            'trace'=>1,
+            'debug'=>2,
+            'info'=>3,
+            'warn'=>4,
+            'error'=>5
+        ];
+        if (isset($levels[$level])) {
+            return $levels[$level];
+        } else {
+            return 1;
+        }
     }
 }
