@@ -24,11 +24,7 @@ class debug extends p\PlugIn
             $output = p\plug('debug_store');
         }
         if (!is_object($output)) {
-            if (!p\exists($output,'plugin')) {
-                $output = $this['output'] = p\plug($output);
-            } else {
-                return !trigger_error('Output plugin not found. ['.$output.']');
-            }
+            $output = $this['output'] = p\plug($output);
         }
         return $output;
     }
