@@ -116,16 +116,17 @@ class debug extends p\PlugIn
         $console=$this->getOutput();
         for ($i=0, $j=count($a);$i<$j;$i++) {
             if (is_object($a[$i])) {
-                $b[]= $console->escape('class '.get_class($a[$i]));
+                $param = $console->escape('class '.get_class($a[$i]));
             } elseif (is_array($a[$i])) {
-                $c = reset($a[$i]);
-                $d = key($a[$i]).' => '. substr($this->objToStr($c), 0, 30);
-                $b[]='array '.$d;
+                $param = reset($a[$i]);
+                $param = key($a[$i]).' => '. $this->objToStr($param);
+                $param ='array '.$param;
             } elseif (is_null($a[$i])) {
-                $b[]='NULL';
+                $param ='NULL';
             } else {
-                $b[]=$console->escape($a[$i]);
+                $param = $console->escape($a[$i]);
             }
+            $b[] = substr($param, 0, 50);
         }
         return join(', ', $b);
     }
