@@ -99,12 +99,19 @@ class debug extends p\PlugIn
         }
     }
     
-    public function objToStr($s)
+    public function objToStr($o)
     {
-        if (is_object($s)) {
-            $s = 'class '.get_class($s);
+        if (is_object($o)) {
+            $o = 'class '.get_class($o);
         }
-        return trim(print_r($s, true));
+        if (empty($o)) {
+            if (is_array($o)) {
+                return '[]';
+            } else {
+                return 'NULL';
+            }
+        }
+        return trim(print_r($o, true));
     }
 
     public function parseArgus($a)
