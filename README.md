@@ -9,9 +9,11 @@
 
 ## Debug output plugin
    1. https://github.com/pmvc-plugin/debug_store
+      * use with vew engine
    1. https://github.com/pmvc-plugin/debug_console
-   * Todo
-      * Command-line output
+      * Use in browser console or json
+   1. https://github.com/pmvc-plugin/debug_cli
+      * Use in command line
 
 ## Install with Composer
 ### 1. Download composer
