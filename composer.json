@@ -2,7 +2,7 @@
     "name": "pmvc-plugin/debug",
     "description": "pmvc debug dump tool",
     "type": "library",
-    "homepage": "https://github.com/pmvc-plugin/debug",
+    "homepage": "https://github.com/pmvc/pmvc",
     "keywords": ["debug", "pmvc", "plug-in"],
     "license": "MIT",
     "authors": [

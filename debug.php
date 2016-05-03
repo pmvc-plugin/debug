@@ -125,8 +125,8 @@ class debug extends p\PlugIn
             if (is_object($a[$i])) {
                 $param = 'class '.get_class($a[$i]);
             } elseif (is_array($a[$i])) {
-                $param = reset($a[$i]);
-                $param = key($a[$i]).' => '. $this->objToStr($param);
+                $clone = array_merge([],$a[$i]);
+                $param = key($clone).' => '. $this->objToStr(reset($clone));
                 $param ='array '.$param;
             } elseif (is_null($a[$i])) {
                 $param ='NULL';

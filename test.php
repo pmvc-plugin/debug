@@ -1,6 +1,6 @@
 <?php
 PMVC\Load::plug();
-PMVC\addPlugInFolder('../');
+PMVC\addPlugInFolders(['../']);
 class DebugConsoleTest extends PHPUnit_Framework_TestCase
 {
     function testDebugConsole()
