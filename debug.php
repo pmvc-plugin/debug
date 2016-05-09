@@ -131,7 +131,7 @@ class debug extends p\PlugIn
             } elseif (is_null($a[$i])) {
                 $param ='NULL';
             } else {
-                $param = $a[$i];
+                $param = (string)$a[$i];
             }
             $b[] = $console->escape(substr($param, 0, 50));
         }
