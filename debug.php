@@ -29,7 +29,7 @@ class debug extends p\PlugIn
         if (!is_object($output)) {
             $output = $this['output'] = p\plug($output);
         }
-        if (!$output instanceof DebugDumpInterface) {
+        if (!$output->is(__NAMESPACE__.'\DebugDumpInterface')) {
             return !trigger_error('['.get_class($output).'] is not a valid debug output object,'.
                 'expedted DebugDumpInterface. '.print_r($output,true),
                 E_USER_WARNING
