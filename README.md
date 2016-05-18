@@ -8,10 +8,10 @@
 ===============
 
 ## Debug output plugin
-   1. https://github.com/pmvc-plugin/debug_store
-      * Use with vew engine
    1. https://github.com/pmvc-plugin/debug_console
       * Use with browser console or json
+   1. https://github.com/pmvc-plugin/debug_store
+      * Use with view engine
    1. https://github.com/pmvc-plugin/debug_cli
       * Use with command line
 
