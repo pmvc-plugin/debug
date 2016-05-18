@@ -6,6 +6,9 @@ use PMVC as p;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 
+/**
+ * @parameters string output Debug output function [debug_console|debug_store|debug_cli]
+ */
 class debug extends p\PlugIn
 {
     private $run=false;
@@ -25,6 +28,12 @@ class debug extends p\PlugIn
         }
         if (!is_object($output)) {
             $output = $this['output'] = p\plug($output);
+        }
+        if (!$output instanceof DebugDumpInterface) {
+            return !trigger_error('['.get_class($output).'] is not a valid debug output object,'.
+                'expedted DebugDumpInterface. '.print_r($output,true),
+                E_USER_WARNING
+            );
         }
         return $output;
     }
@@ -50,6 +59,9 @@ class debug extends p\PlugIn
     public function dump($content)
     {
         $console=$this->getOutput();
+        if (!$console) {
+            return;
+        }
         if ($this->isException($content)) {
             $message = $content->getMessage();
             $d = $content->getTrace();
