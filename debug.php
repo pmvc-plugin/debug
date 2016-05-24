@@ -145,7 +145,7 @@ class debug extends p\PlugIn
             } else {
                 $param = (string)$a[$i];
             }
-            $b[] = $console->escape(substr($param, 0, 50));
+            $b[] = $console->escape(mb_substr($param, 0, 50));
         }
         return join(', ', $b);
     }
