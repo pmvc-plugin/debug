@@ -72,14 +72,14 @@ class debug extends p\PlugIn
             $d=array_slice($d, 7);
             $error_level = 'debug';
         }
-        $console->dump($message, $error_level);
-        $content=null;
-        unset($content, $message);
         $arr =array();
         $i=1;
         foreach ($d as $k=>$v) {
             $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
+            if ('handleError'===$name) {
+                $error_level = 'error';
+            }
             if (!empty($v['object'])) {
                 $name = get_class($v['object']).$v['type'].$name;
                 unset($v['object']);
@@ -90,7 +90,9 @@ class debug extends p\PlugIn
             $i++;
         }
         $d=null;
-        unset($d);
+        $console->dump($message, $error_level);
+        $content=null;
+        unset($d,$content, $message);
         $console->dump($arr, 'trace');
         $arr=null;
         unset($arr);
