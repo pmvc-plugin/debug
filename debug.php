@@ -8,6 +8,7 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 
 /**
  * @parameters string output Debug output function [debug_console|debug_store|debug_cli]
+ * @parameters string truncate Debug truncate dump function parameter string lengths 
  */
 class debug extends p\PlugIn
 {
@@ -17,6 +18,9 @@ class debug extends p\PlugIn
     {
         if (empty($this['output'])) {
             $this['output'] = 'debug_console';
+        }
+        if (empty($this['truncate'])) {
+            $this['truncate'] = 100;
         }
     }
 
@@ -147,7 +151,7 @@ class debug extends p\PlugIn
             } else {
                 $param = (string)$a[$i];
             }
-            $b[] = $console->escape(mb_substr($param, 0, 50));
+            $b[] = $console->escape(mb_substr($param, 0, $this['truncate']));
         }
         return join(', ', $b);
     }
