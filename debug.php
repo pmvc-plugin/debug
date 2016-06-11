@@ -1,18 +1,21 @@
 <?php
 namespace PMVC\PlugIn\debug;
-use PMVC as p;
 
-\PMVC\l(__DIR__.'/src/DebugDumpInterface.php');
+use PMVC as p;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 
+\PMVC\l(__DIR__.'/src/DebugDumpInterface.php');
+
 /**
- * @parameters string output Debug output function [debug_console|debug_store|debug_cli]
- * @parameters string truncate Debug truncate dump function parameter string lengths 
+ * @parameters string  output   Debug output function [debug_console|debug_store|debug_cli]
+ * @parameters string  truncate Debug truncate dump function parameter string lengths 
+ * @parameters numeric level    Debug dump level 
  */
 class debug extends p\PlugIn
 {
     private $run=false;
+    private $_output;
 
     public function init()
     {
@@ -22,24 +25,51 @@ class debug extends p\PlugIn
         if (empty($this['truncate'])) {
             $this['truncate'] = 100;
         }
+        p\callPlugin(
+            'dispatcher',
+            'attach',
+            [ 
+                $this,
+                'SetConfig__run_form_',
+            ]
+        );
+    }
+
+    public function onSetConfig__run_form_($subject)
+    {
+        $subject->detach($this);
+        $trace = p\value(
+            p\getOption(_RUN_FORM),
+            ['trace']
+        );
+        if ($trace && is_string($trace)) {
+            $this['level']=$trace;
+        }
     }
 
     public function getOutput()
     {
-        $output = $this['output'];
-        if (p\getOption(_VIEW_ENGINE)==='json') {
-            $output = p\plug('debug_store');
+        if (!$this->_output) {
+            $output = $this['output'];
+            if (p\getOption(_VIEW_ENGINE)==='json') {
+                $output = 'debug_store';
+            }
+            if (!is_object($output)) {
+                $outputParam = [];
+                if (isset($this['level'])) {
+                    $outputParam['level'] = $this['level'];
+                }
+                $output = $this['output'] = p\plug($output,$outputParam);
+            }
+            if (!$output->is(__NAMESPACE__.'\DebugDumpInterface')) {
+                return !trigger_error('['.get_class($output).'] is not a valid debug output object,'.
+                    'expedted DebugDumpInterface. '.print_r($output,true),
+                    E_USER_WARNING
+                );
+            }
+            $this->_output = $output;
         }
-        if (!is_object($output)) {
-            $output = $this['output'] = p\plug($output);
-        }
-        if (!$output->is(__NAMESPACE__.'\DebugDumpInterface')) {
-            return !trigger_error('['.get_class($output).'] is not a valid debug output object,'.
-                'expedted DebugDumpInterface. '.print_r($output,true),
-                E_USER_WARNING
-            );
-        }
-        return $output;
+        return $this->_output;
     }
 
     public function d()
@@ -170,5 +200,11 @@ class debug extends p\PlugIn
         } else {
             return 1;
         }
+    }
+
+    public function isShow($type, $level)
+    {
+        return $this->getLevel($type) >=
+            $this->getLevel($level);
     }
 }
