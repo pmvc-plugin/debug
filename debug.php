@@ -61,6 +61,11 @@ class debug extends p\PlugIn
                 }
                 $output = $this['output'] = p\plug($output,$outputParam);
             }
+            if (empty($output)) {
+                return !trigger_error('[PMVC:PlugIn:Debug:getOutput] Get Output failded.',
+                    E_USER_WARNING
+                );
+            }
             if (!$output->is(__NAMESPACE__.'\DebugDumpInterface')) {
                 return !trigger_error('['.get_class($output).'] is not a valid debug output object,'.
                     'expedted DebugDumpInterface. '.print_r($output,true),
