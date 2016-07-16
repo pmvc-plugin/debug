@@ -33,7 +33,7 @@ class debug extends p\PlugIn
                 'SetConfig__run_form_',
             ]
         );
-        $this->setLevel(\PMVC\value($_REQUEST,['trace']));
+        $this->setLevel(\PMVC\value($_REQUEST,['trace']), false);
     }
 
     public function getLevel($level, $default=1)
@@ -52,9 +52,9 @@ class debug extends p\PlugIn
         }
     }
 
-    public function setLevel($level)
+    public function setLevel($level, $force=true)
     {
-       if ($this->getLevel($level, null)) {
+       if (!isset($this['level']) || $force) {
             $this['level']=$level;
        }
     }
@@ -66,7 +66,7 @@ class debug extends p\PlugIn
             p\getOption(_RUN_FORM),
             ['trace']
         );
-        $this->setLevel($trace);
+        $this->setLevel($trace, false);
     }
 
     public function getOutput()
@@ -213,9 +213,9 @@ class debug extends p\PlugIn
         return join(', ', $b);
     }
 
-    public function isShow($type, $level)
+    public function isShow($runLevel, $showLevel)
     {
-        return $this->getLevel($type) >=
-            $this->getLevel($level);
+        return $this->getLevel($runLevel) >=
+            $this->getLevel($showLevel);
     }
 }
