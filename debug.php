@@ -33,7 +33,7 @@ class debug extends p\PlugIn
                 'SetConfig__run_form_',
             ]
         );
-        $this->setLevel(\PMVC\value($_REQUEST,['trace']), false);
+        $this->setLevelType(\PMVC\value($_REQUEST,['trace']), false);
     }
 
     public function getLevel($level, $default=1)
@@ -52,7 +52,7 @@ class debug extends p\PlugIn
         }
     }
 
-    public function setLevel($level, $force=true)
+    public function setLevelType($level, $force=true)
     {
        if (!isset($this['level']) || $force) {
             $this['level']=$level;
@@ -66,35 +66,41 @@ class debug extends p\PlugIn
             p\getOption(_RUN_FORM),
             ['trace']
         );
-        $this->setLevel($trace, false);
+        $this->setLevelType($trace, false);
+    }
+
+    public function setOutput()
+    {
+        $output = $this['output'];
+        if (p\getOption(_VIEW_ENGINE)==='json') {
+            $output = 'debug_store';
+        }
+        if (!is_object($output)) {
+            $outputParam = [];
+            if (isset($this['level'])) {
+                $outputParam['level'] = $this['level'];
+            }
+            $output = p\plug( $output, $outputParam);
+        }
+        if (empty($output)) {
+            return !trigger_error('[PMVC:PlugIn:Debug:getOutput] Get Output failded.',
+                E_USER_WARNING
+            );
+        }
+        if (!$output->is(__NAMESPACE__.'\DebugDumpInterface')) {
+            return !trigger_error('['.get_class($output).'] is not a valid debug output object,'.
+                'expedted DebugDumpInterface. '.print_r($output,true),
+                E_USER_WARNING
+            );
+        }
+        $this['output'] = $output;
+        $this->_output = $output;
     }
 
     public function getOutput()
     {
         if (!$this->_output) {
-            $output = $this['output'];
-            if (p\getOption(_VIEW_ENGINE)==='json') {
-                $output = 'debug_store';
-            }
-            if (!is_object($output)) {
-                $outputParam = [];
-                if (isset($this['level'])) {
-                    $outputParam['level'] = $this['level'];
-                }
-                $output = $this['output'] = p\plug($output,$outputParam);
-            }
-            if (empty($output)) {
-                return !trigger_error('[PMVC:PlugIn:Debug:getOutput] Get Output failded.',
-                    E_USER_WARNING
-                );
-            }
-            if (!$output->is(__NAMESPACE__.'\DebugDumpInterface')) {
-                return !trigger_error('['.get_class($output).'] is not a valid debug output object,'.
-                    'expedted DebugDumpInterface. '.print_r($output,true),
-                    E_USER_WARNING
-                );
-            }
-            $this->_output = $output;
+            $this->setOutput();
         }
         return $this->_output;
     }
