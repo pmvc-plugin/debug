@@ -7,6 +7,8 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 
 \PMVC\l(__DIR__.'/src/DebugDumpInterface.php');
 
+const INPUT_FIELD = '_trace';
+
 /**
  * @parameters string  output   Debug output function [debug_console|debug_store|debug_cli]
  * @parameters string  truncate Debug truncate dump function parameter string lengths 
@@ -33,7 +35,7 @@ class debug extends p\PlugIn
                 'SetConfig__run_form_',
             ]
         );
-        $this->setLevelType(\PMVC\value($_REQUEST,['trace']), false);
+        $this->setLevelType(\PMVC\value($_REQUEST,[INPUT_FIELD]), false);
     }
 
     public function getLevel($level, $default=1)
@@ -64,7 +66,7 @@ class debug extends p\PlugIn
         $subject->detach($this);
         $trace = p\value(
             p\getOption(_RUN_FORM),
-            ['trace']
+            [INPUT_FIELD]
         );
         $this->setLevelType($trace, false);
     }
