@@ -15,6 +15,10 @@
    1. https://github.com/pmvc-plugin/debug_cli
       * Use with command line
 
+## Trigger debug from request
+   * http -> $_REQUEST['_trace']
+   * cli -> --_trace
+
 ## Install with Composer
 ### 1. Download composer
    * mkdir test_folder
