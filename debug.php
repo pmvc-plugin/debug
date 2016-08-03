@@ -109,6 +109,7 @@ class debug extends p\PlugIn
 
     public function d()
     {
+        http_response_code(507);
         $a = func_get_args();
         if ($this->isException($a[0]) || (1===count($a) && is_string($a[0]))) {
             $tmp = $a[0];
