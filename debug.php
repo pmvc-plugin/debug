@@ -7,7 +7,7 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 
 \PMVC\l(__DIR__.'/src/DebugDumpInterface.php');
 
-const INPUT_FIELD = '_trace';
+const INPUT_FIELD = '--trace';
 
 /**
  * @parameters string  output   Debug output function [debug_console|debug_store|debug_cli]
