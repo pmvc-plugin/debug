@@ -16,8 +16,8 @@
       * Use with command line
 
 ## Trigger debug from request
-   * http -> $_REQUEST['_trace']
-   * cli -> --_trace
+   * http -> $_REQUEST['--trace']
+   * cli -> ----trace
 
 ## Install with Composer
 ### 1. Download composer
