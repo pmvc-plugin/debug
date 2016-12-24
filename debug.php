@@ -38,6 +38,12 @@ class debug extends p\PlugIn
         $this->setLevelType(\PMVC\value($_REQUEST,[INPUT_FIELD]), false);
     }
 
+    public function isShow($runLevel, $showLevel, $default=1)
+    {
+        return $this->getLevel($runLevel, $default) >=
+            $this->getLevel($showLevel, $default);
+    }
+
     public function getLevel($level, $default=1)
     {
         $levels =  [
@@ -222,9 +228,4 @@ class debug extends p\PlugIn
         return join(', ', $b);
     }
 
-    public function isShow($runLevel, $showLevel)
-    {
-        return $this->getLevel($runLevel) >=
-            $this->getLevel($showLevel);
-    }
 }
