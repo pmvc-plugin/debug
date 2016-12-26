@@ -2,6 +2,7 @@
 namespace PMVC\PlugIn\debug;
 
 use PMVC as p;
+use PMVC\Event;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 
@@ -27,15 +28,26 @@ class debug extends p\PlugIn
         if (empty($this['truncate'])) {
             $this['truncate'] = 100;
         }
-        p\callPlugin(
+        \PMVC\callPlugin(
             'dispatcher',
             'attach',
             [ 
                 $this,
-                'SetConfig__run_form_',
+                Event\MAP_REQUEST,
             ]
         );
         $this->setLevelType(\PMVC\value($_REQUEST,[INPUT_FIELD]), false);
+    }
+
+    public function onMapRequest($subject)
+    {
+        $subject->detach($this);
+        $request = p\plug('controller')->getRequest();
+        $trace = p\value(
+            $request,
+            [INPUT_FIELD]
+        );
+        $this->setLevelType($trace, false);
     }
 
     public function isShow($runLevel, $showLevel, $default=1)
@@ -67,15 +79,6 @@ class debug extends p\PlugIn
        }
     }
 
-    public function onSetConfig__run_form_($subject)
-    {
-        $subject->detach($this);
-        $trace = p\value(
-            p\getOption(_RUN_FORM),
-            [INPUT_FIELD]
-        );
-        $this->setLevelType($trace, false);
-    }
 
     public function setOutput()
     {
