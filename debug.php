@@ -169,7 +169,7 @@ class debug extends p\PlugIn
             $i++;
         }
         $d=null;
-        $console->dump($message, $error_level);
+        $console->dump(\PMVC\fromJson($message), $error_level);
         $content=null;
         unset($d,$content, $message);
         $console->dump($arr, 'trace');
