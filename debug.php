@@ -169,12 +169,14 @@ class debug extends p\PlugIn
             $i++;
         }
         $d=null;
-        $console->dump(\PMVC\fromJson($message), $error_level);
-        $content=null;
-        unset($d,$content, $message);
+        $json = \PMVC\fromJson($message);
+        if (!is_array($json) && !is_object($json)) {
+            $json = $message;
+        }
+        $console->dump($json, $error_level);
+        unset($d, $content, $message, $json);
         $console->dump($arr, 'trace');
-        $arr=null;
-        unset($arr);
+        unset($arr, $console);
     }
 
     /**
