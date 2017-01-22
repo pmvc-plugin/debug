@@ -22,9 +22,6 @@ class debug extends p\PlugIn
 
     public function init()
     {
-        if (empty($this['output'])) {
-            $this['output'] = 'debug_console';
-        }
         if (empty($this['truncate'])) {
             $this['truncate'] = 100;
         }
