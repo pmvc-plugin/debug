@@ -49,11 +49,18 @@ class debug extends p\PlugIn
 
     public function isShow($runLevel, $showLevel, $default=1)
     {
-        return $this->getLevel($runLevel, $default) >=
-            $this->getLevel($showLevel, $default);
+        /**
+        * if user input &--trace=debug,curl
+        * will use debug for default level.
+        */
+        return $this->getLevel(
+            $runLevel,
+            $this->getLevel($showLevel, $default)
+        ) >=
+        $this->getLevel($showLevel, $default);
     }
 
-    public function getLevel($level, $default=1)
+    public function getLevel($inputLevel, $default=1)
     {
         $levels =  [
             'trace'=>1,
@@ -62,11 +69,14 @@ class debug extends p\PlugIn
             'warn'=>4,
             'error'=>5
         ];
-        if (isset($levels[$level])) {
-            return $levels[$level];
-        } else {
-            return $default;
+        $inputLevels = explode(',', $inputLevel); 
+        foreach ($inputLevels as $lev) {
+            if (isset($levels[$lev])) {
+                return $levels[$lev];
+            }
         }
+
+        return $default;
     }
 
     public function setLevelType($level, $force=true)
@@ -79,7 +89,7 @@ class debug extends p\PlugIn
 
     public function setOutput()
     {
-        $output = $this['output'];
+        $output = \PMVC\get($this,'output','debug_console');
         if (p\getOption(_VIEW_ENGINE)==='json') {
             $output = 'debug_store';
         }
