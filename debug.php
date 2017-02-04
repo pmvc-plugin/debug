@@ -142,25 +142,14 @@ class debug extends p\PlugIn
         }
     }
 
-    public function dump($content)
+    public function parseTrace($raw, $slice = 0)
     {
-        $console=$this->getOutput();
-        if (!$console) {
-            return;
+        if ($slice) {
+            $raw = array_slice($raw, $slice);
         }
-        if ($this->isException($content)) {
-            $message = $content->getMessage();
-            $d = $content->getTrace();
-            $error_level = 'error';
-        } else {
-            $message =& $content;
-            $d=debug_backtrace();
-            $d=array_slice($d, 7);
-            $error_level = 'debug';
-        }
-        $arr =array();
+        $arr = [];
         $i=1;
-        foreach ($d as $k=>$v) {
+        foreach ($raw as $k=>$v) {
             $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
             if ('handleError'===$name) {
@@ -175,15 +164,34 @@ class debug extends p\PlugIn
             $arr[$i.':'.$name.'('.$args.')'] =$v;
             $i++;
         }
-        $d=null;
+        $raw = null;
+        unset($raw, $k, $v);
+        return $arr;
+    }
+
+    public function dump($content)
+    {
+        $console=$this->getOutput();
+        if (!$console) {
+            return;
+        }
+        if ($this->isException($content)) {
+            $message = $content->getMessage();
+            $trace = $this->parseTrace($content->getTrace());
+            $error_level = 'error';
+        } else {
+            $message =& $content;
+            $trace = $this->parseTrace(debug_backtrace(), 7);
+            $error_level = 'debug';
+        }
         $json = \PMVC\fromJson($message);
         if (!is_array($json) && !is_object($json)) {
             $json = $message;
         }
         $console->dump($json, $error_level);
-        unset($d, $content, $message, $json);
-        $console->dump($arr, 'trace');
-        unset($arr, $console);
+        unset($content, $message, $json);
+        $console->dump($trace, 'trace');
+        unset($trace, $console);
     }
 
     /**
