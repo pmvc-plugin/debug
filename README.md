@@ -18,6 +18,7 @@
 ## Trigger debug from request
    * http -> $_REQUEST['--trace']
    * cli -> ----trace
+   * hardcode -> \PMVC\plug('debug')->setLevel('xxx');
 
 ## Install with Composer
 ### 1. Download composer

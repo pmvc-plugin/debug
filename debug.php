@@ -33,18 +33,18 @@ class debug extends p\PlugIn
                 Event\MAP_REQUEST,
             ]
         );
-        $this->setLevelType(\PMVC\value($_REQUEST,[INPUT_FIELD]), false);
+        $this->setLevel(p\get($_REQUEST,INPUT_FIELD), false);
     }
 
     public function onMapRequest($subject)
     {
         $subject->detach($this);
         $request = p\plug('controller')->getRequest();
-        $trace = p\value(
+        $trace = p\get(
             $request,
-            [INPUT_FIELD]
+            INPUT_FIELD
         );
-        $this->setLevelType($trace, false);
+        $this->setLevel($trace, false);
     }
 
     public function isShow($runLevel, $showLevel, $default=1)
@@ -79,7 +79,7 @@ class debug extends p\PlugIn
         return $default;
     }
 
-    public function setLevelType($level, $force=true)
+    public function setLevel($level, $force=true)
     {
        if (!isset($this['level']) || $force) {
             $this['level']=$level;
