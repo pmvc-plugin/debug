@@ -50,17 +50,27 @@ class debug extends p\PlugIn
     public function isShow($runLevel, $showLevel, $default=1)
     {
         /**
-        * if user input &--trace=debug,curl
-        * will use debug for default level.
+        * if user input multi level, will use first found standard level.
+        * such as &--trace=debug,curl will use debug one.
         */
-        return $this->getLevel(
-            $runLevel,
-            $this->getLevel($showLevel, $default)
-        ) >=
-        $this->getLevel($showLevel, $default);
+        return 
+            $this->LevelToInt(
+                $runLevel,
+                $this->LevelToInt($showLevel, $default)
+            ) >=
+            $this->LevelToInt(
+                $showLevel,
+                $default
+            );
     }
 
-    public function getLevel($inputLevel, $default=1)
+    /**
+     * @params string $inputLevel The transfer one
+     * @params int $default If input not found, return this one
+     *
+     * @return int
+     */
+    public function LevelToInt($inputLevel, $default=1)
     {
         $levels =  [
             'trace'=>1,
@@ -77,6 +87,11 @@ class debug extends p\PlugIn
         }
 
         return $default;
+    }
+
+    public function getLevels()
+    {
+        return explode(',', $this['level']);
     }
 
     public function setLevel($level, $force=true)
