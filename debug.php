@@ -8,6 +8,9 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 
 \PMVC\l(__DIR__.'/src/DebugDumpInterface.php');
 
+if (defined(__NAMESPACE__.'\INPUT_FIELD')) {
+   return; 
+}
 const INPUT_FIELD = '--trace';
 
 /**
