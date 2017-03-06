@@ -4,13 +4,13 @@ namespace PMVC\PlugIn\debug;
 use PMVC as p;
 use PMVC\Event;
 
-${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
-
 \PMVC\l(__DIR__.'/src/DebugDumpInterface.php');
 
 if (defined(__NAMESPACE__.'\INPUT_FIELD')) {
    return; 
 }
+
+${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 const INPUT_FIELD = '--trace';
 
 /**
