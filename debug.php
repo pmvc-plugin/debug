@@ -22,6 +22,7 @@ class debug extends p\PlugIn
 {
     private $run=false;
     private $_output;
+    private $_detectTraceErrorLevel;
 
     public function init()
     {
@@ -104,7 +105,6 @@ class debug extends p\PlugIn
        }
     }
 
-
     public function setOutput()
     {
         $output = \PMVC\get($this,'output','debug_console');
@@ -167,11 +167,12 @@ class debug extends p\PlugIn
         }
         $arr = [];
         $i=1;
+        $this->_detectTraceErrorLevel = null;
         foreach ($raw as $k=>$v) {
             $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
             if ('handleError'===$name) {
-                $error_level = 'error';
+                $this->_detectTraceErrorLevel = 'error';
             }
             if (!empty($v['object'])) {
                 $name = get_class($v['object']).$v['type'].$name;
@@ -196,17 +197,20 @@ class debug extends p\PlugIn
         if ($this->isException($content)) {
             $message = $content->getMessage();
             $trace = $this->parseTrace($content->getTrace());
-            $error_level = 'error';
+            $errorLevel = 'error';
         } else {
             $message =& $content;
             $trace = $this->parseTrace(debug_backtrace(), 7);
-            $error_level = 'debug';
+            $errorLevel = $this->_detectTraceErrorLevel;
+            if (is_null($errorLevel)) {
+                $errorLevel = 'debug';
+            }
         }
         $json = \PMVC\fromJson($message);
         if (!is_array($json) && !is_object($json)) {
             $json = $message;
         }
-        $console->dump($json, $error_level);
+        $console->dump($json, $errorLevel);
         unset($content, $message, $json);
         $console->dump($trace, 'trace');
         unset($trace, $console);
