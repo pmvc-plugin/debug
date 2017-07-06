@@ -171,6 +171,10 @@ class debug extends p\PlugIn
         foreach ($raw as $k=>$v) {
             $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
+            $file = '';
+            if (isset($v['file'])) {
+                $file = '['.basename($v['file']).'] ';
+            }
             if ('handleError'===$name) {
                 $this->_detectTraceErrorLevel = 'error';
             }
@@ -180,7 +184,7 @@ class debug extends p\PlugIn
             }
             unset($v['args']);
             unset($v['type']);
-            $arr[$i.':'.$name.'('.$args.')'] =$v;
+            $arr[$i.': '.$file.$name.'('.$args.')'] =$v;
             $i++;
         }
         $raw = null;
