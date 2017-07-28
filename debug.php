@@ -269,7 +269,7 @@ class debug extends p\PlugIn
             } else {
                 $param = (string)$a[$i];
             }
-            $b[] = $console->escape(mb_substr($param, 0, $this['truncate']));
+            $b[] = $console->escape(mb_substr(strip_tags($param), 0, $this['truncate']));
         }
         return join(', ', $b);
     }
