@@ -22,7 +22,8 @@ class debug extends p\PlugIn
 {
     private $run=false;
     private $_output;
-    private $_detectTraceErrorLevel;
+    private $_level=null;
+    private $_isDumpError;
 
     public function init()
     {
@@ -95,14 +96,21 @@ class debug extends p\PlugIn
 
     public function getLevels()
     {
-        return explode(',', $this['level']);
+        return explode(',', $this->_level);
     }
 
     public function setLevel($level, $force=true)
     {
-       if (!isset($this['level']) || $force) {
-            $this['level']=$level;
+       if (!isset($this->_level) || $force) {
+            $this->_level = $level;
        }
+       \PMVC\callPlugin(
+           'dispatcher',
+           'notify',
+           [ 
+            'resetDebugLevel'
+           ]
+       );
     }
 
     public function setOutput()
@@ -113,8 +121,8 @@ class debug extends p\PlugIn
         }
         if (!is_object($output)) {
             $outputParam = [];
-            if (isset($this['level'])) {
-                $outputParam['level'] = $this['level'];
+            if (isset($this->_level)) {
+                $outputParam['level'] = $this->_level;
             }
             $output = p\plug( $output, $outputParam);
         }
@@ -167,7 +175,7 @@ class debug extends p\PlugIn
         }
         $arr = [];
         $i=1;
-        $this->_detectTraceErrorLevel = null;
+        $this->_isDumpError = null;
         foreach ($raw as $k=>$v) {
             $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
@@ -176,7 +184,7 @@ class debug extends p\PlugIn
                 $file = '['.basename($v['file']).'] ';
             }
             if ('handleError'===$name) {
-                $this->_detectTraceErrorLevel = 'error';
+                $this->_isDumpError = 'error';
             }
             if (!empty($v['object'])) {
                 $name = get_class($v['object']).$v['type'].$name;
@@ -205,7 +213,7 @@ class debug extends p\PlugIn
         } else {
             $message =& $content;
             $trace = $this->parseTrace(debug_backtrace(), 7);
-            $errorLevel = $this->_detectTraceErrorLevel;
+            $errorLevel = $this->_isDumpError;
             if (is_null($errorLevel)) {
                 $errorLevel = 'debug';
             }
