@@ -38,7 +38,9 @@ class debug extends p\PlugIn
                 Event\MAP_REQUEST,
             ]
         );
-        $this->setLevel(p\get($_REQUEST,INPUT_FIELD), false);
+        if (isset($_REQUEST[INPUT_FIELD])) {
+            $this->setLevel($_REQUEST[INPUT_FIELD], false);
+        }
     }
 
     public function onMapRequest($subject)
@@ -49,7 +51,9 @@ class debug extends p\PlugIn
             $request,
             INPUT_FIELD
         );
-        $this->setLevel($trace, false);
+        if (!empty($trace)) {
+            $this->setLevel($trace, false);
+        }
     }
 
     public function isShow($runLevel, $showLevel, $default=1)
