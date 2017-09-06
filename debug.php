@@ -46,7 +46,7 @@ class debug extends p\PlugIn
     public function onMapRequest($subject)
     {
         $subject->detach($this);
-        $request = p\plug('controller')->getRequest();
+        $request = p\callPlugin('controller', 'getRequest');
         $trace = p\get(
             $request,
             INPUT_FIELD
