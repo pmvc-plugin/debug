@@ -18,6 +18,10 @@ class DebugConsoleTest extends PHPUnit_Framework_TestCase
         $this->assertContains($this->_plug,$output);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     function testGetOutput()
     {
         $debug = \PMVC\plug($this->_plug);

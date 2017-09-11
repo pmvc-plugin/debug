@@ -148,6 +148,8 @@ class debug extends p\PlugIn
     public function getOutput()
     {
         if (!$this->_output) {
+            http_response_code(\PMVC\getOption('httpResponseCode',500));
+            \PMVC\plug('cache_header')->noCache();
             $this->setOutput();
         }
         return $this->_output;
@@ -155,7 +157,6 @@ class debug extends p\PlugIn
 
     public function d()
     {
-        http_response_code(\PMVC\getOption('httpResponseCode',500));
         $a = func_get_args();
         if ($this->isException($a[0]) || (1===count($a) && is_string($a[0]))) {
             $tmp = $a[0];
