@@ -4,7 +4,7 @@ namespace PMVC\PlugIn\debug;
 use PMVC as p;
 use PMVC\Event;
 
-\PMVC\l(__DIR__.'/src/DebugDumpInterface.php');
+p\l(__DIR__.'/src/DebugDumpInterface.php');
 
 if (defined(__NAMESPACE__.'\INPUT_FIELD')) {
    return; 
@@ -30,7 +30,7 @@ class debug extends p\PlugIn
         if (empty($this['truncate'])) {
             $this['truncate'] = 100;
         }
-        \PMVC\callPlugin(
+        p\callPlugin(
             'dispatcher',
             'attach',
             [ 
@@ -108,7 +108,7 @@ class debug extends p\PlugIn
        if (!isset($this->_level) || $force) {
             $this->_level = $level;
        }
-       \PMVC\callPlugin(
+       p\callPlugin(
            'dispatcher',
            'notify',
            [ 
@@ -119,7 +119,7 @@ class debug extends p\PlugIn
 
     public function setOutput()
     {
-        $output = \PMVC\get($this,'output','debug_console');
+        $output = p\get($this,'output','debug_console');
         if (p\getOption(_VIEW_ENGINE)==='json') {
             $output = 'debug_store';
         }
@@ -148,9 +148,9 @@ class debug extends p\PlugIn
     public function getOutput()
     {
         if (!$this->_output) {
-            if (\PMVC\exists('http', 'plugin')) {
-                http_response_code(\PMVC\getOption('httpResponseCode',500));
-                \PMVC\plug('cache_header')->noCache();
+            if (!headers_sent() && p\exists('http', 'plugin')) {
+                http_response_code(p\getOption('httpResponseCode',500));
+                p\plug('cache_header')->noCache();
             }
             $this->setOutput();
         }
@@ -225,7 +225,7 @@ class debug extends p\PlugIn
                 $errorLevel = 'debug';
             }
         }
-        $json = \PMVC\fromJson($message);
+        $json = p\fromJson($message);
         if (!is_array($json) && !is_object($json)) {
             $json = $message;
         }
@@ -288,5 +288,4 @@ class debug extends p\PlugIn
         }
         return join(', ', $b);
     }
-
 }
