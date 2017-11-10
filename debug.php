@@ -160,8 +160,11 @@ class debug extends p\PlugIn
     public function d()
     {
         $a = func_get_args();
-        if ($this->isException($a[0]) || (1===count($a) && is_string($a[0]))) {
-            $tmp = $a[0];
+        $a0 = $a[0];
+        if ($this->isException($a0) || 
+            ( 1===count($a) && is_string($a0) )
+        ) {
+            $tmp = $a0;
         } else {
             ob_start();
             call_user_func_array('var_dump', $a);
