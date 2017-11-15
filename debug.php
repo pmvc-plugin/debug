@@ -228,8 +228,8 @@ class debug extends p\PlugIn
                 $errorLevel = 'debug';
             }
         }
-        $json = p\fromJson($message);
-        if (!is_array($json) && !is_object($json)) {
+        $json = p\fromJson($message, true);
+        if (!is_array($json)) {
             $json = $message;
         }
         $console->dump($json, $errorLevel);
