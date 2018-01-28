@@ -194,7 +194,11 @@ class debug extends p\PlugIn
                 $file = '['.basename($v['file']).'] ';
             }
             if ('handleError'===$name) {
-                $this->_isDumpError = 'error';
+                if (E_USER_WARNING === \PMVC\value($v, ['args', 0])) {
+                    $this->_isDumpError = 'warn';
+                } else {
+                    $this->_isDumpError = 'error';
+                }
             }
             if (!empty($v['object'])) {
                 $name = get_class($v['object']).$v['type'].$name;
