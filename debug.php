@@ -7,7 +7,7 @@ use PMVC\Event;
 p\l(__DIR__.'/src/DebugDumpInterface.php');
 
 if (defined(__NAMESPACE__.'\INPUT_FIELD')) {
-   return; 
+    return; 
 }
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
@@ -105,21 +105,21 @@ class debug extends p\PlugIn
 
     public function setLevel($level, $force=true)
     {
-       if (!isset($this->_level) || $force) {
+        if (!isset($this->_level) || $force) {
             $this->_level = $level;
-       }
-       p\callPlugin(
-           'dispatcher',
-           'notify',
-           [ 
+        }
+        p\callPlugin(
+            'dispatcher',
+            'notify',
+            [ 
             'resetDebugLevel'
-           ]
-       );
+            ]
+        );
     }
 
     public function setOutput()
     {
-        $output = p\get($this,'output','debug_console');
+        $output = p\get($this, 'output', 'debug_console');
         if (p\getOption(_VIEW_ENGINE)==='json') {
             $output = 'debug_store';
         }
@@ -128,16 +128,18 @@ class debug extends p\PlugIn
             if (isset($this->_level)) {
                 $outputParam['level'] = $this->_level;
             }
-            $output = p\plug( $output, $outputParam);
+            $output = p\plug($output, $outputParam);
         }
         if (empty($output)) {
-            return !trigger_error('[PMVC:PlugIn:Debug:getOutput] Get Output failded.',
+            return !trigger_error(
+                '[PMVC:PlugIn:Debug:getOutput] Get Output failded.',
                 E_USER_WARNING
             );
         }
         if (!$output->is(__NAMESPACE__.'\DebugDumpInterface')) {
-            return !trigger_error('['.get_class($output).'] is not a valid debug output object,'.
-                'expedted DebugDumpInterface. '.print_r($output,true),
+            return !trigger_error(
+                '['.get_class($output).'] is not a valid debug output object,'.
+                'expedted DebugDumpInterface. '.print_r($output, true),
                 E_USER_WARNING
             );
         }
@@ -149,8 +151,11 @@ class debug extends p\PlugIn
     {
         if (!$this->_output) {
             if (!headers_sent() && p\exists('http', 'plugin')) {
-                http_response_code(p\getOption('httpResponseCode',500));
-                p\plug('cache_header')->noCache();
+                http_response_code(p\getOption('httpResponseCode', 500));
+                p\callPlugin(
+                    'cache_header',
+                    'noCache'
+                );
             }
             $this->setOutput();
         }
@@ -161,8 +166,8 @@ class debug extends p\PlugIn
     {
         $a = func_get_args();
         $a0 = $a[0];
-        if ($this->isException($a0) || 
-            ( 1===count($a) && is_string($a0) )
+        if ($this->isException($a0)  
+            || ( 1===count($a) && is_string($a0) )
         ) {
             $tmp = $a0;
         } else {
@@ -244,12 +249,13 @@ class debug extends p\PlugIn
 
     /**
      * Check is exception
+     *
      * @param object $object
      */
     public function isException($object) 
     {
-        if ( is_a($object, 'Exception')
-          || is_a($object, 'Error')
+        if (is_a($object, 'Exception')
+            || is_a($object, 'Error')
         ) {
             return true;
         } else {
@@ -283,7 +289,7 @@ class debug extends p\PlugIn
             if (is_object($a[$i])) {
                 $param = 'class '.get_class($a[$i]);
             } elseif (is_array($a[$i])) {
-                $clone = array_merge([],$a[$i]);
+                $clone = array_merge([], $a[$i]);
                 $param = key($clone).' => '. $this->objToStr(reset($clone));
                 $param ='array '.$param;
             } elseif (is_null($a[$i])) {
