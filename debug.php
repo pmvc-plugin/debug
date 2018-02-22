@@ -14,9 +14,10 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
 const INPUT_FIELD = '--trace';
 
 /**
- * @parameters string  output   Debug output function [debug_console|debug_store|debug_cli]
- * @parameters string  truncate Debug truncate dump function parameter string lengths 
- * @parameters numeric level    Debug dump level 
+ * @parameters string  output    Debug output function [debug_console|debug_store|debug_cli]
+ * @parameters string  truncate  Debug truncate dump function parameter string lengths 
+ * @parameters numeric level     Debug dump level 
+ * @parameters numeric traceFrom option for split debug_backtrace 
  */
 class debug extends p\PlugIn
 {
@@ -29,6 +30,9 @@ class debug extends p\PlugIn
     {
         if (empty($this['truncate'])) {
             $this['truncate'] = 100;
+        }
+        if (!strlen($this['traceFrom'])) {
+            $this['traceFrom'] = 7;
         }
         p\callPlugin(
             'dispatcher',
@@ -231,7 +235,7 @@ class debug extends p\PlugIn
             $errorLevel = 'error';
         } else {
             $message =& $content;
-            $trace = $this->parseTrace(debug_backtrace(), 7);
+            $trace = $this->parseTrace(debug_backtrace(), $this['traceFrom']);
             $errorLevel = $this->_isDumpError;
             if (is_null($errorLevel)) {
                 $errorLevel = 'debug';
