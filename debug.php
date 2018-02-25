@@ -187,10 +187,10 @@ class debug extends p\PlugIn
         }
     }
 
-    public function parseTrace($raw, $slice = 0)
+    public function parseTrace($raw, $slice = 0, $length = null)
     {
         if ($slice) {
-            $raw = array_slice($raw, $slice);
+            $raw = array_slice($raw, $slice, $length);
         }
         $arr = [];
         $i=1;
