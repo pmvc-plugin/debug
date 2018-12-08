@@ -124,9 +124,6 @@ class debug extends p\PlugIn
     public function setOutput()
     {
         $output = p\get($this, 'output', 'debug_console');
-        if (p\getOption(_VIEW_ENGINE)==='json') {
-            $output = 'debug_store';
-        }
         if (!is_object($output)) {
             $outputParam = [];
             if (isset($this->_level)) {
@@ -147,7 +144,6 @@ class debug extends p\PlugIn
                 E_USER_WARNING
             );
         }
-        $this['output'] = $output;
         $this->_output = $output;
     }
 
@@ -163,6 +159,10 @@ class debug extends p\PlugIn
             }
             $this->setOutput();
         }
+        if (p\getOption(_VIEW_ENGINE)==='json') {
+            $this['output'] = 'debug_store';
+            $this->setOutput();
+        } 
         return $this->_output;
     }
 
