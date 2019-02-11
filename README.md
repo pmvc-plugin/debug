@@ -4,7 +4,7 @@
 [![License](https://poser.pugx.org/pmvc-plugin/debug/license)](https://packagist.org/packages/pmvc-plugin/debug)
 [![Total Downloads](https://poser.pugx.org/pmvc-plugin/debug/downloads)](https://packagist.org/packages/pmvc-plugin/debug) 
 
-# PMVC debug tool 
+PMVC debug tool 
 ===============
 
 ## Debug output plugin
