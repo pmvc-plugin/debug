@@ -11,7 +11,14 @@ if (defined(__NAMESPACE__.'\INPUT_FIELD')) {
 }
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
+
 const INPUT_FIELD = '--trace';
+const DEFAULT_ERROR_HTTP_CODE = 500; 
+const TRACE = 'trace';
+const DEBUG = 'debug';
+const INFO = 'info';
+const WARN = 'warn';
+const ERROR = 'error';
 
 /**
  * @parameters string  output    Debug output function [debug_console|debug_store|debug_cli]
@@ -24,7 +31,7 @@ class debug extends p\PlugIn
     private $run=false;
     private $_output;
     private $_level=null;
-    private $_isDumpError;
+    private $_dumpLevel;
 
     public function init()
     {
@@ -86,11 +93,11 @@ class debug extends p\PlugIn
     public function LevelToInt($inputLevel, $default=1)
     {
         $levels =  [
-            'trace'=>1,
-            'debug'=>2,
-            'info'=>3,
-            'warn'=>4,
-            'error'=>5
+            TRACE=>1,
+            DEBUG=>2,
+            INFO=>3,
+            WARN=>4,
+            ERROR=>5
         ];
         $inputLevels = explode(',', $inputLevel); 
         foreach ($inputLevels as $lev) {
@@ -147,16 +154,19 @@ class debug extends p\PlugIn
         $this->_output = $output;
     }
 
-    public function getOutput()
+    public function getOutput( $isSendHttpCode = true)
     {
+        if ($isSendHttpCode 
+            && !headers_sent()  
+            && p\exists('http', 'plugin')
+        ) {
+            http_response_code(p\getOption('httpResponseCode', DEFAULT_ERROR_HTTP_CODE));
+            p\callPlugin(
+                'cache_header',
+                'noCache'
+            );
+        }
         if (!$this->_output) {
-            if (!headers_sent() && p\exists('http', 'plugin')) {
-                http_response_code(p\getOption('httpResponseCode', 500));
-                p\callPlugin(
-                    'cache_header',
-                    'noCache'
-                );
-            }
             $this->setOutput();
         }
         if (p\getOption(_VIEW_ENGINE)==='json') {
@@ -194,7 +204,7 @@ class debug extends p\PlugIn
         }
         $arr = [];
         $i=1;
-        $this->_isDumpError = null;
+        $this->_dumpLevel = null;
         foreach ($raw as $k=>$v) {
             $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
@@ -204,9 +214,9 @@ class debug extends p\PlugIn
             }
             if ('handleError'===$name) {
                 if (E_USER_WARNING === \PMVC\value($v, ['args', 0])) {
-                    $this->_isDumpError = 'warn';
+                    $this->_dumpLevel = WARN;
                 } else {
-                    $this->_isDumpError = 'error';
+                    $this->_dumpLevel = ERROR;
                 }
             }
             if (!empty($v['object'])) {
@@ -225,21 +235,21 @@ class debug extends p\PlugIn
 
     public function dump($content)
     {
-        $console=$this->getOutput();
-        if (!$console) {
-            return;
-        }
         if ($this->isException($content)) {
             $message = $content->getMessage();
             $trace = $this->parseTrace($content->getTrace());
-            $errorLevel = 'error';
+            $errorLevel = ERROR;
         } else {
             $message =& $content;
             $trace = $this->parseTrace(debug_backtrace(), $this['traceFrom']);
-            $errorLevel = $this->_isDumpError;
+            $errorLevel = $this->_dumpLevel;
             if (is_null($errorLevel)) {
-                $errorLevel = 'debug';
+                $errorLevel = DEBUG;
             }
+        }
+        $console=$this->getOutput(WARN === $errorLevel);
+        if (!$console) {
+            return;
         }
         $json = p\fromJson($message, true);
         if (!is_array($json)) {
