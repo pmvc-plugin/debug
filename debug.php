@@ -154,18 +154,8 @@ class debug extends p\PlugIn
         $this->_output = $output;
     }
 
-    public function getOutput( $isSendHttpCode = true)
+    public function getOutput()
     {
-        if ($isSendHttpCode 
-            && !headers_sent()  
-            && p\exists('http', 'plugin')
-        ) {
-            http_response_code(p\getOption('httpResponseCode', DEFAULT_ERROR_HTTP_CODE));
-            p\callPlugin(
-                'cache_header',
-                'noCache'
-            );
-        }
         if (!$this->_output) {
             $this->setOutput();
         }
@@ -235,6 +225,10 @@ class debug extends p\PlugIn
 
     public function dump($content)
     {
+        $console=$this->getOutput();
+        if (!$console) {
+            return;
+        }
         if ($this->isException($content)) {
             $message = $content->getMessage();
             $trace = $this->parseTrace($content->getTrace());
@@ -247,9 +241,15 @@ class debug extends p\PlugIn
                 $errorLevel = DEBUG;
             }
         }
-        $console=$this->getOutput(WARN === $errorLevel);
-        if (!$console) {
-            return;
+        if (!in_array($errorLevel, [WARN, TRACE]) 
+            && !headers_sent() 
+            && p\exists('http', 'plugin')
+        ) {
+            http_response_code(p\getOption('httpResponseCode', DEFAULT_ERROR_HTTP_CODE));
+            p\callPlugin(
+                'cache_header',
+                'noCache'
+            );
         }
         $json = p\fromJson($message, true);
         if (!is_array($json)) {
