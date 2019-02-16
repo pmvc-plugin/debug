@@ -39,7 +39,7 @@ class debug extends p\PlugIn
             $this['truncate'] = 100;
         }
         if (!strlen($this['traceFrom'])) {
-            $this['traceFrom'] = 7;
+            $this['traceFrom'] = 6;
         }
         p\callPlugin(
             'dispatcher',
