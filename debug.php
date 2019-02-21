@@ -70,7 +70,7 @@ class debug extends p\PlugIn
     public function isShow($runLevel, $showLevel, $default=1)
     {
         /**
-        * if user input multi level, will use first found standard level.
+        * if user input multi level, will use first standard level.
         * such as &--trace=debug,curl will use debug one.
         */
         return 
@@ -223,6 +223,20 @@ class debug extends p\PlugIn
         return $arr;
     }
 
+    public function httpResponseCode($bool = true)
+    {
+        if ($bool 
+            && !headers_sent() 
+            && p\exists('http', 'plugin')
+        ) {
+            http_response_code(p\getOption('httpResponseCode', DEFAULT_ERROR_HTTP_CODE));
+            p\callPlugin(
+                'cache_header',
+                'noCache'
+            );
+        }
+    }
+
     public function dump($content)
     {
         $console=$this->getOutput();
@@ -241,16 +255,7 @@ class debug extends p\PlugIn
                 $errorLevel = DEBUG;
             }
         }
-        if (!in_array($errorLevel, [WARN, TRACE]) 
-            && !headers_sent() 
-            && p\exists('http', 'plugin')
-        ) {
-            http_response_code(p\getOption('httpResponseCode', DEFAULT_ERROR_HTTP_CODE));
-            p\callPlugin(
-                'cache_header',
-                'noCache'
-            );
-        }
+        $this->httpResponseCode(!in_array($errorLevel, [WARN, TRACE]));
         $json = p\fromJson($message, true);
         if (!is_array($json)) {
             $json = $message;
