@@ -198,7 +198,7 @@ class debug extends p\PlugIn
         foreach ($raw as $k=>$v) {
             $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
-            $file = '';
+            $file = '[] ';
             if (isset($v['file'])) {
                 $file = '['.basename($v['file']).'] ';
             }
