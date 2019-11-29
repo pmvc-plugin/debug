@@ -303,8 +303,9 @@ class debug extends p\PlugIn
             return $a;
         }
         $b=[];
+        $aLen = count($a);
         $console=$this->getOutput();
-        for ($i=0, $j=count($a);$i<$j;$i++) {
+        for ($i=0, $j=$aLen; $i<$j; $i++) {
             if (is_object($a[$i])) {
                 $param = 'class '.get_class($a[$i]);
             } elseif (is_array($a[$i])) {
@@ -316,7 +317,7 @@ class debug extends p\PlugIn
             } else {
                 $param = (string)$a[$i];
             }
-            $b[] = $console->escape(mb_substr(strip_tags($param), 0, $this['truncate']));
+            $b[] = $console->escape(\PMVC\plug('utf8')->substr(strip_tags($param), 0, $this['truncate']));
         }
         return join(', ', $b);
     }
