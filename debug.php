@@ -32,6 +32,7 @@ class debug extends p\PlugIn
     private $_output;
     private $_level=null;
     private $_dumpLevel;
+    private $_utf8;
 
     public function init()
     {
@@ -52,6 +53,7 @@ class debug extends p\PlugIn
         if (isset($_REQUEST[INPUT_FIELD])) {
             $this->setLevel($_REQUEST[INPUT_FIELD], false);
         }
+        $this->_utf8 = \PMVC\plug('utf8');
     }
 
     public function onMapRequest($subject)
@@ -317,7 +319,7 @@ class debug extends p\PlugIn
             } else {
                 $param = (string)$a[$i];
             }
-            $b[] = $console->escape(\PMVC\plug('utf8')->substr(strip_tags($param), 0, $this['truncate']));
+            $b[] = $console->escape($this->_utf8->substr(strip_tags($param), 0, $this['truncate']));
         }
         return join(', ', $b);
     }
