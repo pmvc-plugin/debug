@@ -260,7 +260,7 @@ class debug extends p\PlugIn
         $this->httpResponseCode(!in_array($errorLevel, [WARN, TRACE]));
         $json = p\fromJson($message, true);
         if (!is_array($json)) {
-            $json = $message;
+            $json = $console->escape($message);
         }
         $console->dump($json, $errorLevel);
         unset($content, $message, $json);
