@@ -322,7 +322,11 @@ class debug extends p\PlugIn
                     $param = "''";
                 }
             }
-            $b[] = $console->escape($this->_utf8->substr(strip_tags($param), 0, $this['truncate']));
+            if (is_numeric($param)) {
+              $b[] = $param;
+            } else {
+              $b[] = $console->escape($this->_utf8->substr(strip_tags($param), 0, $this['truncate']));
+            }
         }
         return join(', ', $b);
     }
