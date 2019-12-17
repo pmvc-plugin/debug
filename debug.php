@@ -317,7 +317,7 @@ class debug extends p\PlugIn
             } elseif (is_null($a[$i])) {
                 $param ='NULL';
             } else {
-                $param = (string)$a[$i];
+                $param = is_numeric($a[$i]) ? $a[$i] : (string)$a[$i];
             }
             $b[] = $console->escape($this->_utf8->substr(strip_tags($param), 0, $this['truncate']));
         }
