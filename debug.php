@@ -197,6 +197,10 @@ class debug extends p\PlugIn
         $arr = [];
         $i=1;
         $this->_dumpLevel = null;
+        $keepArgs = false;
+        \PMVC\dev(function() use (&$keepArgs) {
+          $keepArgs = true;
+        }, 'debug-keep-args');
         foreach ($raw as $k=>$v) {
             $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
@@ -215,7 +219,9 @@ class debug extends p\PlugIn
                 $name = get_class($v['object']).$v['type'].$name;
                 unset($v['object']);
             }
-            unset($v['args']);
+            if (!$keepArgs) {
+              unset($v['args']);
+            }
             unset($v['type']);
             $arr[$i.': '.$file.$name.'('.$args.')'] =$v;
             $i++;
