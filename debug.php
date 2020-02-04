@@ -11,6 +11,7 @@ if (defined(__NAMESPACE__.'\INPUT_FIELD')) {
 }
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
+p\initPlugIn(['utf8'=>null]);
 
 const INPUT_FIELD = '--trace';
 const DEFAULT_ERROR_HTTP_CODE = 500; 
