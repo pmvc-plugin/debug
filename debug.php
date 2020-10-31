@@ -114,7 +114,7 @@ class debug extends p\PlugIn
 
     public function getLevels()
     {
-        return explode(',', $this->_level);
+        return $this->_level ? explode(',', $this->_level) : [];
     }
 
     public function setLevel($level, $force=true)
