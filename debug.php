@@ -252,13 +252,14 @@ class debug extends p\PlugIn
         if (!$console) {
             return;
         }
+        $traceLength = $this['traceLength'] ? $this['traceLength'] : null;
         if ($this->isException($content)) {
             $message = $content->getMessage();
-            $trace = $this->parseTrace($content->getTrace());
+            $trace = $this->parseTrace($content->getTrace(), 0, $traceLength);
             $errorLevel = ERROR;
         } else {
             $message =& $content;
-            $trace = $this->parseTrace(debug_backtrace(), $this['traceFrom']);
+            $trace = $this->parseTrace(debug_backtrace(), $this['traceFrom'], $traceLength);
             $errorLevel = $this->_dumpLevel;
             if (is_null($errorLevel)) {
                 $errorLevel = DEBUG;
