@@ -315,7 +315,7 @@ class debug extends p\PlugIn
         $b=[];
         $aLen = count($a);
         $console=$this->getOutput();
-        for ($i=0, $j=$aLen; $i<$j; $i++) {
+        for ($i=0; $i<$aLen; $i++) {
             if (is_object($a[$i])) {
                 $param = 'class '.get_class($a[$i]);
             } elseif (is_array($a[$i])) {
@@ -333,7 +333,8 @@ class debug extends p\PlugIn
             if (is_numeric($param)) {
               $b[] = $param;
             } else {
-              $b[] = $console->escape($this->_utf8->substr(strip_tags($param), 0, $this['truncate']));
+              $param = strip_tags($param); // better memory usage.
+              $b[] = $console->escape($this->_utf8->substr($param, 0, $this['truncate']));
             }
         }
         return join(', ', $b);
