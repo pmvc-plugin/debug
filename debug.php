@@ -4,17 +4,17 @@ namespace PMVC\PlugIn\debug;
 use PMVC as p;
 use PMVC\Event;
 
-p\l(__DIR__.'/src/DebugDumpInterface.php');
+p\l(__DIR__ . '/src/DebugDumpInterface.php');
 
-if (defined(__NAMESPACE__.'\INPUT_FIELD')) {
-    return; 
+if (defined(__NAMESPACE__ . '\INPUT_FIELD')) {
+    return;
 }
 
-${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\debug';
-p\initPlugIn(['utf8'=>null]);
+${_INIT_CONFIG}[_CLASS] = __NAMESPACE__ . '\debug';
+p\initPlugIn(['utf8' => null]);
 
 const INPUT_FIELD = '--trace';
-const DEFAULT_ERROR_HTTP_CODE = 500; 
+const DEFAULT_ERROR_HTTP_CODE = 500;
 const TRACE = 'trace';
 const DEBUG = 'debug';
 const INFO = 'info';
@@ -23,15 +23,15 @@ const ERROR = 'error';
 
 /**
  * @parameters string  output    Debug output function [debug_console|debug_store|debug_cli]
- * @parameters string  truncate  Debug truncate dump function parameter string lengths 
- * @parameters numeric level     Debug dump level 
- * @parameters numeric traceFrom option for split debug_backtrace 
+ * @parameters string  truncate  Debug truncate dump function parameter string lengths
+ * @parameters numeric level     Debug dump level
+ * @parameters numeric traceFrom option for split debug_backtrace
  */
 class debug extends p\PlugIn
 {
-    private $run=false;
+    private $run = false;
     private $_output;
-    private $_level=null;
+    private $_level = null;
     private $_dumpLevel;
     private $_utf8;
 
@@ -43,14 +43,7 @@ class debug extends p\PlugIn
         if (!strlen($this['traceFrom'])) {
             $this['traceFrom'] = 6;
         }
-        p\callPlugin(
-            'dispatcher',
-            'attach',
-            [ 
-                $this,
-                Event\MAP_REQUEST,
-            ]
-        );
+        p\callPlugin('dispatcher', 'attach', [$this, Event\MAP_REQUEST]);
         if (isset($_REQUEST[INPUT_FIELD])) {
             $this->setLevel($_REQUEST[INPUT_FIELD], false);
         }
@@ -61,30 +54,22 @@ class debug extends p\PlugIn
     {
         $subject->detach($this);
         $request = p\callPlugin('controller', 'getRequest');
-        $trace = p\get(
-            $request,
-            INPUT_FIELD
-        );
+        $trace = p\get($request, INPUT_FIELD);
         if (!empty($trace)) {
             $this->setLevel($trace, false);
         }
     }
 
-    public function isShow($runLevel, $showLevel, $default=1)
+    public function isShow($runLevel, $showLevel, $default = 1)
     {
         /**
-        * if user input multi level, will use first standard level.
-        * such as &--trace=debug,curl will use debug one.
-        */
-        return 
-            $this->LevelToInt(
-                $runLevel,
-                $this->LevelToInt($showLevel, $default)
-            ) >=
-            $this->LevelToInt(
-                $showLevel,
-                $default
-            );
+         * if user input multi level, will use first standard level.
+         * such as &--trace=debug,curl will use debug one.
+         */
+        return $this->LevelToInt(
+            $runLevel,
+            $this->LevelToInt($showLevel, $default)
+        ) >= $this->LevelToInt($showLevel, $default);
     }
 
     /**
@@ -93,42 +78,45 @@ class debug extends p\PlugIn
      *
      * @return int
      */
-    public function LevelToInt($inputLevel, $default=1)
+    public function LevelToInt($inputLevel, $default = 1)
     {
-        $levels =  [
-            TRACE=>1,
-            DEBUG=>2,
-            INFO=>3,
-            WARN=>4,
-            ERROR=>5
+        $levels = [
+            TRACE => 1,
+            DEBUG => 2,
+            INFO => 3,
+            WARN => 4,
+            ERROR => 5,
         ];
-        $inputLevels = explode(',', $inputLevel); 
+        $inputLevels = $this->getLevels($inputLevel);
+        $arrLevel = [];
         foreach ($inputLevels as $lev) {
             if (isset($levels[$lev])) {
-                return $levels[$lev];
+                $arrLevel[] = $levels[$lev];
             }
         }
+        if (count($arrLevel)) {
+            $result = min($arrLevel);
+        } else {
+            $result = $default;
+        }
 
-        return $default;
+        return $result;
     }
 
-    public function getLevels()
+    public function getLevels($level = null)
     {
-        return $this->_level ? explode(',', $this->_level) : [];
+        if (is_null($level)) {
+            $level = $this->_level;
+        }
+        return $level ? array_map('trim', explode(',', $level)) : [];
     }
 
-    public function setLevel($level, $force=true)
+    public function setLevel($level, $force = true)
     {
         if (!isset($this->_level) || $force) {
             $this->_level = $level;
         }
-        p\callPlugin(
-            'dispatcher',
-            'notify',
-            [ 
-            'resetDebugLevel'
-            ]
-        );
+        p\callPlugin('dispatcher', 'notify', ['resetDebugLevel']);
     }
 
     public function setOutput()
@@ -147,10 +135,13 @@ class debug extends p\PlugIn
                 E_USER_WARNING
             );
         }
-        if (!$output->is(__NAMESPACE__.'\DebugDumpInterface')) {
+        if (!$output->is(__NAMESPACE__ . '\DebugDumpInterface')) {
             return !trigger_error(
-                '['.get_class($output).'] is not a valid debug output object,'.
-                'expedted DebugDumpInterface. '.print_r($output, true),
+                '[' .
+                    get_class($output) .
+                    '] is not a valid debug output object,' .
+                    'expedted DebugDumpInterface. ' .
+                    print_r($output, true),
                 E_USER_WARNING
             );
         }
@@ -162,10 +153,10 @@ class debug extends p\PlugIn
         if (!$this->_output) {
             $this->setOutput();
         }
-        if (p\getOption(_VIEW_ENGINE)==='json') {
+        if (p\getOption(_VIEW_ENGINE) === 'json') {
             $this['output'] = 'debug_store';
             $this->setOutput();
-        } 
+        }
         return $this->_output;
     }
 
@@ -173,20 +164,18 @@ class debug extends p\PlugIn
     {
         $a = func_get_args();
         $a0 = $a[0];
-        if ($this->isException($a0)  
-            || ( 1===count($a) && is_string($a0) )
-        ) {
+        if ($this->isException($a0) || (1 === count($a) && is_string($a0))) {
             $tmp = $a0;
         } else {
             ob_start();
             call_user_func_array('var_dump', $a);
-            $tmp=ob_get_contents();
+            $tmp = ob_get_contents();
             ob_end_clean();
         }
         if (!$this->run) {
-            $this->run=true;
+            $this->run = true;
             $this->dump($tmp);
-            $this->run=false;
+            $this->run = false;
         }
     }
 
@@ -196,20 +185,20 @@ class debug extends p\PlugIn
             $raw = array_slice($raw, $sliceFrom, $length);
         }
         $arr = [];
-        $i=1;
+        $i = 1;
         $this->_dumpLevel = null;
         $keepArgs = false;
-        \PMVC\dev(function() use (&$keepArgs) {
-          $keepArgs = true;
+        \PMVC\dev(function () use (&$keepArgs) {
+            $keepArgs = true;
         }, 'debug-keep-args');
-        foreach ($raw as $k=>$v) {
-            $args = (!empty($v['args'])) ? $this->parseArgus($v['args']) : '';
+        foreach ($raw as $k => $v) {
+            $args = !empty($v['args']) ? $this->parseArgus($v['args']) : '';
             $name = $v['function'];
             $file = '[] ';
             if (isset($v['file'])) {
-                $file = '['.basename($v['file']).'] ';
+                $file = '[' . basename($v['file']) . '] ';
             }
-            if ('handleError'===$name) {
+            if ('handleError' === $name) {
                 if (E_USER_WARNING === \PMVC\value($v, ['args', 0])) {
                     $this->_dumpLevel = WARN;
                 } else {
@@ -217,14 +206,14 @@ class debug extends p\PlugIn
                 }
             }
             if (!empty($v['object'])) {
-                $name = get_class($v['object']).$v['type'].$name;
+                $name = get_class($v['object']) . $v['type'] . $name;
                 unset($v['object']);
             }
             if (!$keepArgs) {
-              unset($v['args']);
+                unset($v['args']);
             }
             unset($v['type']);
-            $arr[$i.': '.$file.$name.'('.$args.')'] =$v;
+            $arr[$i . ': ' . $file . $name . '(' . $args . ')'] = $v;
             $i++;
         }
         $raw = null;
@@ -234,21 +223,17 @@ class debug extends p\PlugIn
 
     public function httpResponseCode($bool = true)
     {
-        if ($bool 
-            && !headers_sent() 
-            && p\exists('http', 'plugin')
-        ) {
-            http_response_code(p\getOption('httpResponseCode', DEFAULT_ERROR_HTTP_CODE));
-            p\callPlugin(
-                'cache_header',
-                'noCache'
+        if ($bool && !headers_sent() && p\exists('http', 'plugin')) {
+            http_response_code(
+                p\getOption('httpResponseCode', DEFAULT_ERROR_HTTP_CODE)
             );
+            p\callPlugin('cache_header', 'noCache');
         }
     }
 
     public function dump($content)
     {
-        $console=$this->getOutput();
+        $console = $this->getOutput();
         if (!$console) {
             return;
         }
@@ -258,8 +243,12 @@ class debug extends p\PlugIn
             $trace = $this->parseTrace($content->getTrace(), 0, $traceLength);
             $errorLevel = ERROR;
         } else {
-            $message =& $content;
-            $trace = $this->parseTrace(debug_backtrace(), $this['traceFrom'], $traceLength);
+            $message = &$content;
+            $trace = $this->parseTrace(
+                debug_backtrace(),
+                $this['traceFrom'],
+                $traceLength
+            );
             $errorLevel = $this->_dumpLevel;
             if (is_null($errorLevel)) {
                 $errorLevel = DEBUG;
@@ -281,21 +270,19 @@ class debug extends p\PlugIn
      *
      * @param object $object
      */
-    public function isException($object) 
+    public function isException($object)
     {
-        if (is_a($object, 'Exception')
-            || is_a($object, 'Error')
-        ) {
+        if (is_a($object, 'Exception') || is_a($object, 'Error')) {
             return true;
         } else {
             return false;
         }
     }
-    
+
     public function objToStr($o)
     {
         if (is_object($o)) {
-            $o = 'class '.get_class($o);
+            $o = 'class ' . get_class($o);
         }
         if (empty($o)) {
             if (is_array($o)) {
@@ -312,29 +299,31 @@ class debug extends p\PlugIn
         if (!is_array($a)) {
             return $a;
         }
-        $b=[];
+        $b = [];
         $aLen = count($a);
-        $console=$this->getOutput();
-        for ($i=0; $i<$aLen; $i++) {
+        $console = $this->getOutput();
+        for ($i = 0; $i < $aLen; $i++) {
             if (is_object($a[$i])) {
-                $param = 'class '.get_class($a[$i]);
+                $param = 'class ' . get_class($a[$i]);
             } elseif (is_array($a[$i])) {
                 $clone = array_merge([], $a[$i]);
-                $param = key($clone).' => '. $this->objToStr(reset($clone));
-                $param ='array '.$param;
+                $param = key($clone) . ' => ' . $this->objToStr(reset($clone));
+                $param = 'array ' . $param;
             } elseif (is_null($a[$i])) {
-                $param ='NULL';
+                $param = 'NULL';
             } else {
-                $param = is_numeric($a[$i]) ? $a[$i] : (string)$a[$i];
+                $param = is_numeric($a[$i]) ? $a[$i] : (string) $a[$i];
                 if (!strlen($param)) {
                     $param = "''";
                 }
             }
             if (is_numeric($param)) {
-              $b[] = $param;
+                $b[] = $param;
             } else {
-              $param = strip_tags($param); // better memory usage.
-              $b[] = $console->escape($this->_utf8->substr($param, 0, $this['truncate']));
+                $param = strip_tags($param); // better memory usage.
+                $b[] = $console->escape(
+                    $this->_utf8->substr($param, 0, $this['truncate'])
+                );
             }
         }
         return join(', ', $b);
