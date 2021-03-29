@@ -46,6 +46,8 @@ class debug extends p\PlugIn
         p\callPlugin('dispatcher', 'attach', [$this, Event\MAP_REQUEST]);
         if (isset($_REQUEST[INPUT_FIELD])) {
             $this->setLevel($_REQUEST[INPUT_FIELD], false);
+        } elseif (isset($this['level'])) {
+            $this->setLevel($this['level'], false);
         }
         $this->_utf8 = \PMVC\plug('utf8');
     }
