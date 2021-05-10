@@ -169,10 +169,7 @@ class debug extends p\PlugIn
         if ($this->isException($a0) || (1 === count($a) && is_string($a0))) {
             $tmp = $a0;
         } else {
-            ob_start();
-            call_user_func_array('var_dump', $a);
-            $tmp = ob_get_contents();
-            ob_end_clean();
+            $tmp = array_map($a, 'var_export');
         }
         if (!$this->run) {
             $this->run = true;

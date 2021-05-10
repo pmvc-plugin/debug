@@ -13,6 +13,7 @@
     ],
     "require": {
         "pmvc-plugin/utf8": "*",
+        "pmvc-plugin/unit": "*",
         "pmvc/pmvc": "*"
     },
     "minimum-stability": "dev"

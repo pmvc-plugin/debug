@@ -1,11 +1,9 @@
 <?php
 namespace PMVC\PlugIn\debug;
 
-use PHPUnit_Framework_TestCase;
+use PMVC\TestCase;
 
-\PMVC\Load::plug(['debug'=>null], ['../']);
-
-class DebugConsoleTest extends PHPUnit_Framework_TestCase
+class DebugConsoleTest extends TestCase
 {
     private $_plug = 'debug';
 
@@ -15,7 +13,7 @@ class DebugConsoleTest extends PHPUnit_Framework_TestCase
         print_r(\PMVC\plug($this->_plug));
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains($this->_plug, $output);
+        $this->haveString($this->_plug, $output);
     }
 
     /**
@@ -31,7 +29,7 @@ class DebugConsoleTest extends PHPUnit_Framework_TestCase
             ]
         );
         $o = $debug->getOutput();
-        $this->assertContains('output', print_r($o, true));
+        $this->haveString('output', print_r($o, true));
     }
 
     public function testParseArgus()
