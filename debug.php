@@ -166,7 +166,7 @@ class debug extends p\PlugIn
     {
         $a = func_get_args();
         $a0 = $a[0];
-        if ($this->isException($a0) || (1 === count($a) && is_string($a0))) {
+        if ($this->isException($a0) || (1 === count($a) && \PMVC\testString($a0))) {
             $tmp = $a0;
         } else {
             $tmp = print_r($a, true);
