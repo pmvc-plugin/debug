@@ -47,6 +47,23 @@ class DebugConsoleTest extends TestCase
         $o = $debug->parseArgus(['xxx']);
         $this->assertEquals('xx', $o);
     }
+
+    public function testDump()
+    {
+        $debug = \PMVC\plug(
+            $this->_plug, [
+            'truncate'=> 2 
+            ]
+        );
+        $debug['output'] = \PMVC\plug(
+            'output', [
+            _CLASS=>__NAMESPACE__.'\fakeOutput'
+            ]
+        );
+        $result = $debug->d(['a'], ['b']);
+        $this->haveString('[0] => a', $result[0]);
+        $this->haveString('[0] => b', $result[1]);
+    }
 }
 
 class fakeOutput

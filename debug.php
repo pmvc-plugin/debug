@@ -169,13 +169,16 @@ class debug extends p\PlugIn
         if ($this->isException($a0) || (1 === count($a) && is_string($a0))) {
             $tmp = $a0;
         } else {
-            $tmp = array_map($a, 'var_export');
+            $tmp = array_map(function ($o) {
+                return print_r($o, true);
+            }, $a);
         }
         if (!$this->run) {
             $this->run = true;
             $this->dump($tmp);
             $this->run = false;
         }
+        return $tmp;
     }
 
     public function parseTrace($raw, $sliceFrom = 0, $length = null)
