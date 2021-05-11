@@ -169,9 +169,7 @@ class debug extends p\PlugIn
         if ($this->isException($a0) || (1 === count($a) && is_string($a0))) {
             $tmp = $a0;
         } else {
-            $tmp = array_map(function ($o) {
-                return print_r($o, true);
-            }, $a);
+            $tmp = print_r($a, true);
         }
         if (!$this->run) {
             $this->run = true;

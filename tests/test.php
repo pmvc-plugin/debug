@@ -61,8 +61,8 @@ class DebugConsoleTest extends TestCase
             ]
         );
         $result = $debug->d(['a'], ['b']);
-        $this->haveString('[0] => a', $result[0]);
-        $this->haveString('[0] => b', $result[1]);
+        $this->haveString('[0] => a', $result);
+        $this->haveString('[0] => b', $result);
     }
 }
 
