@@ -188,8 +188,13 @@ class debug extends p\PlugIn
         $i = 1;
         $this->_dumpLevel = null;
         $keepArgs = false;
-        \PMVC\dev(function () use (&$keepArgs) {
+        \PMVC\dev(
+          /**
+           * @help let trace information not demise args
+           */
+          function () use (&$keepArgs) {
             $keepArgs = true;
+            return 'Set keepArgs to true';
         }, 'debug-keep-args');
         foreach ($raw as $k => $v) {
             $args = !empty($v['args']) ? $this->parseArgus($v['args']) : '';
