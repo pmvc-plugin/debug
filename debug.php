@@ -152,11 +152,17 @@ class debug extends p\PlugIn
 
     public function getOutput()
     {
-        if (!$this->_output) {
-            $this->setOutput();
-        }
+        p\callPlugin(
+            'dispatcher',
+            'notify',
+            [
+                Event\WILL_SET_VIEW
+            ]
+        );
         if (p\getOption(_VIEW_ENGINE) === 'json') {
             $this['output'] = 'debug_store';
+            $this->setOutput();
+        } elseif (!$this->_output) {
             $this->setOutput();
         }
         return $this->_output;
@@ -196,8 +202,9 @@ class debug extends p\PlugIn
             $keepArgs = true;
             return 'Set keepArgs to true';
         }, 'debug-keep-args');
+        $console = $this->getOutput();
         foreach ($raw as $k => $v) {
-            $args = !empty($v['args']) ? $this->parseArgus($v['args']) : '';
+            $args = !empty($v['args']) ? $this->_parseArgus($v['args'], $console) : '';
             $name = $v['function'];
             $file = '[] ';
             if (isset($v['file'])) {
@@ -299,14 +306,13 @@ class debug extends p\PlugIn
         return trim(print_r($o, true));
     }
 
-    public function parseArgus($a)
+    private function _parseArgus($a, $console)
     {
         if (!is_array($a)) {
             return $a;
         }
         $b = [];
         $aLen = count($a);
-        $console = $this->getOutput();
         for ($i = 0; $i < $aLen; $i++) {
             if (is_object($a[$i])) {
                 $param = 'class ' . get_class($a[$i]);

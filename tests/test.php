@@ -44,7 +44,15 @@ class DebugConsoleTest extends TestCase
             _CLASS=>__NAMESPACE__.'\fakeOutput'
             ]
         );
-        $o = $debug->parseArgus(['xxx']);
+        
+        $debugObj = \PMVC\plugInStore($this->_plug);
+
+        $o = \PMVC\plug('unit')->callPrivate(
+          __NAMESPACE__.'\debug',
+          '_parseArgus',
+          [['xxx'], $debug['output']], 
+          $debugObj
+        );
         $this->assertEquals('xx', $o);
     }
 
