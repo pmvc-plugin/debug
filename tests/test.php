@@ -45,7 +45,7 @@ class DebugConsoleTest extends TestCase
             ]
         );
         
-        $debugObj = \PMVC\plugInStore($this->_plug);
+        $debugObj = \PMVC\InternalUtility::plugInStore($this->_plug);
 
         $o = \PMVC\plug('unit')->callPrivate(
           __NAMESPACE__.'\debug',
