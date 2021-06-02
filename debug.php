@@ -152,13 +152,7 @@ class debug extends p\PlugIn
 
     public function getOutput()
     {
-        p\callPlugin(
-            'dispatcher',
-            'notify',
-            [
-                Event\WILL_SET_VIEW
-            ]
-        );
+        p\callPlugin('dispatcher', 'notify', [Event\WILL_SET_VIEW]);
         if (p\getOption(_VIEW_ENGINE) === 'json') {
             $this['output'] = 'debug_store';
             $this->setOutput();
@@ -172,7 +166,10 @@ class debug extends p\PlugIn
     {
         $a = func_get_args();
         $a0 = $a[0];
-        if ($this->isException($a0) || (1 === count($a) && \PMVC\testString($a0))) {
+        if (
+            $this->isException($a0) ||
+            (1 === count($a) && \PMVC\testString($a0))
+        ) {
             $tmp = $a0;
         } else {
             $tmp = print_r($a, true);
@@ -185,6 +182,87 @@ class debug extends p\PlugIn
         return $tmp;
     }
 
+    public function dump($content)
+    {
+        $console = $this->getOutput();
+        if (!$console) {
+            return;
+        }
+        $traceLength = $this['traceLength'] ? $this['traceLength'] : null;
+        if ($this->isException($content)) {
+            $message = $content->getMessage();
+            $trace = $this->parseTrace($content->getTrace(), 0, $traceLength);
+            $errorLevel = $this->_dumpLevel;
+            if (is_null($errorLevel)) {
+                $errorLevel = WARN;
+            }
+        } else {
+            $message = &$content;
+            $trace = $this->parseTrace(
+                debug_backtrace(),
+                $this['traceFrom'],
+                $traceLength
+            );
+            $errorLevel = $this->_dumpLevel;
+            if (is_null($errorLevel)) {
+                $errorLevel = DEBUG;
+            }
+        }
+        $this->httpResponseCode(!in_array($errorLevel, [WARN, TRACE]));
+        $json = p\fromJson($message, true);
+        if (!is_array($json)) {
+            $json = $console->escape($message);
+        }
+        $console->dump($json, $errorLevel);
+        unset($content, $message, $json);
+        $console->dump($trace, 'trace');
+        unset($trace, $console);
+        $this->_dumpLevel = null;
+    }
+
+    public function httpResponseCode($bool = true)
+    {
+        if ($bool && !headers_sent() && p\exists('http', 'plugin')) {
+            http_response_code(
+                p\getOption('httpResponseCode', DEFAULT_ERROR_HTTP_CODE)
+            );
+            p\callPlugin('cache_header', 'noCache');
+        }
+    }
+
+    /**
+     * Check is exception
+     *
+     * @param object $object
+     */
+    public function isException($object)
+    {
+        if (is_a($object, 'Error')) {
+            $this->_dumpLevel = ERROR;
+            return true;
+        }
+        if (is_a($object, 'Exception')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function objToStr($o)
+    {
+        if (is_object($o)) {
+            $o = 'class ' . get_class($o);
+        }
+        if (empty($o)) {
+            if (is_array($o)) {
+                return '[]';
+            } else {
+                return 'NULL';
+            }
+        }
+        return trim(print_r($o, true));
+    }
+
     public function parseTrace($raw, $sliceFrom = 0, $length = null)
     {
         if ($sliceFrom || $length) {
@@ -192,19 +270,22 @@ class debug extends p\PlugIn
         }
         $arr = [];
         $i = 1;
-        $this->_dumpLevel = null;
         $keepArgs = false;
         \PMVC\dev(
-          /**
-           * @help let trace information not demise args
-           */
-          function () use (&$keepArgs) {
-            $keepArgs = true;
-            return 'Set keepArgs to true';
-        }, 'debug-keep-args');
+            /**
+             * @help let trace information not demise args
+             */
+            function () use (&$keepArgs) {
+                $keepArgs = true;
+                return 'Set keepArgs to true';
+            },
+            'debug-keep-args'
+        );
         $console = $this->getOutput();
         foreach ($raw as $k => $v) {
-            $args = !empty($v['args']) ? $this->_parseArgus($v['args'], $console) : '';
+            $args = !empty($v['args'])
+                ? $this->_parseArgus($v['args'], $console)
+                : '';
             $name = $v['function'];
             $file = '[] ';
             if (isset($v['file'])) {
@@ -231,79 +312,6 @@ class debug extends p\PlugIn
         $raw = null;
         unset($raw, $k, $v);
         return $arr;
-    }
-
-    public function httpResponseCode($bool = true)
-    {
-        if ($bool && !headers_sent() && p\exists('http', 'plugin')) {
-            http_response_code(
-                p\getOption('httpResponseCode', DEFAULT_ERROR_HTTP_CODE)
-            );
-            p\callPlugin('cache_header', 'noCache');
-        }
-    }
-
-    public function dump($content)
-    {
-        $console = $this->getOutput();
-        if (!$console) {
-            return;
-        }
-        $traceLength = $this['traceLength'] ? $this['traceLength'] : null;
-        if ($this->isException($content)) {
-            $message = $content->getMessage();
-            $trace = $this->parseTrace($content->getTrace(), 0, $traceLength);
-            $errorLevel = ERROR;
-        } else {
-            $message = &$content;
-            $trace = $this->parseTrace(
-                debug_backtrace(),
-                $this['traceFrom'],
-                $traceLength
-            );
-            $errorLevel = $this->_dumpLevel;
-            if (is_null($errorLevel)) {
-                $errorLevel = DEBUG;
-            }
-        }
-        $this->httpResponseCode(!in_array($errorLevel, [WARN, TRACE]));
-        $json = p\fromJson($message, true);
-        if (!is_array($json)) {
-            $json = $console->escape($message);
-        }
-        $console->dump($json, $errorLevel);
-        unset($content, $message, $json);
-        $console->dump($trace, 'trace');
-        unset($trace, $console);
-    }
-
-    /**
-     * Check is exception
-     *
-     * @param object $object
-     */
-    public function isException($object)
-    {
-        if (is_a($object, 'Exception') || is_a($object, 'Error')) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function objToStr($o)
-    {
-        if (is_object($o)) {
-            $o = 'class ' . get_class($o);
-        }
-        if (empty($o)) {
-            if (is_array($o)) {
-                return '[]';
-            } else {
-                return 'NULL';
-            }
-        }
-        return trim(print_r($o, true));
     }
 
     private function _parseArgus($a, $console)
