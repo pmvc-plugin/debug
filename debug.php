@@ -283,14 +283,22 @@ class debug extends p\PlugIn
         );
         $console = $this->getOutput();
         foreach ($raw as $k => $v) {
+            if (isset($v['file'])) {
+                $valFile = $v['file'];
+                if (21 === stripos($valFile, 'pmvc/src/Alias.php')) {
+                    continue;
+                }
+                if (21 === stripos($valFile, 'pmvc/src/Adapter.php')) {
+                    continue;
+                }
+                $file = '[' . basename($valFile) . '] ';
+            } else {
+                $file = '[] ';
+            }
             $args = !empty($v['args'])
                 ? $this->_parseArgus($v['args'], $console)
                 : '';
             $name = $v['function'];
-            $file = '[] ';
-            if (isset($v['file'])) {
-                $file = '[' . basename($v['file']) . '] ';
-            }
             if ('handleError' === $name) {
                 if (E_USER_WARNING === \PMVC\value($v, ['args', 0])) {
                     $this->_dumpLevel = WARN;

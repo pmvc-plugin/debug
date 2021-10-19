@@ -41,7 +41,7 @@ class DebugConsoleTest extends TestCase
         ]);
         $debugObj->init();
 
-        $o = \PMVC\plug('unit')->callPrivate(
+        $o = \PMVC\plug('unit')->call_private(
             __NAMESPACE__ . '\debug',
             '_parseArgus',
             [['xxx'], $debugObj['output']],
