@@ -285,10 +285,10 @@ class debug extends p\PlugIn
         foreach ($raw as $k => $v) {
             if (isset($v['file'])) {
                 $valFile = $v['file'];
-                if (21 === stripos($valFile, 'pmvc/src/Alias.php')) {
+                if (false !== strrpos($valFile, '/pmvc/src/Alias.php')) {
                     continue;
                 }
-                if (21 === stripos($valFile, 'pmvc/src/Adapter.php')) {
+                if (false !== strrpos($valFile, '/pmvc/src/Adapter.php')) {
                     continue;
                 }
                 $file = '[' . basename($valFile) . '] ';
