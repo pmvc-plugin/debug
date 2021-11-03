@@ -305,6 +305,9 @@ class debug extends p\PlugIn
             }
             if (0 === strpos($v['function'], 'call_user_func')) {
                 $v['call'] = $this->_parseCall($v);
+                if (empty($v['call'])) {
+                    continue;
+                }
             }
             if ('handleError' === $v['function']) {
                 if (E_USER_WARNING === \PMVC\value($v, ['args', 0])) {
@@ -312,9 +315,18 @@ class debug extends p\PlugIn
                 } else {
                     $this->_dumpLevel = ERROR;
                 }
-            }
-            if (!$keepArgs) {
+                $args = $v['args'];
+                $v['error'] = [
+                  'no' => $args[0],
+                  'message'=>$args[1],
+                  'file' => $args[2],
+                  'line' => $args[3],
+                ];
                 unset($v['args']);
+            } else {
+                if (!$keepArgs) {
+                    unset($v['args']);
+                }
             }
             unset($v['type']);
             $arr[$i . ': ' . $file . $name . '(' . $args . ')'] = $v;
@@ -330,7 +342,11 @@ class debug extends p\PlugIn
         $args0 = \PMVC\value($v, ['args', 0]);
         $class = \PMVC\get($args0, 0);
         if ($class) {
-            $call = [get_class($class), $args0[1]];
+            $className = get_class($class);
+            if ('PMVC\Adapter' === $className) {
+                return false;
+            }
+            $call = [$className, $args0[1]];
         } else {
             $call = $args0;
         }
@@ -341,11 +357,11 @@ class debug extends p\PlugIn
     {
         $name = $v['function'];
         if (!empty($v['object'])) {
-            $class = get_class($v['object']);
-            if ('PMVC\Adapter' === $class) {
+            $className = get_class($v['object']);
+            if ('PMVC\Adapter' === $className) {
                 return false;
             }
-            $name = $class . $v['type'] . $name;
+            $name = $className . $v['type'] . $name;
             unset($v['object']);
         }
         return $name;
