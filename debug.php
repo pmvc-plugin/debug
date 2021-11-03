@@ -1,4 +1,5 @@
 <?php
+
 namespace PMVC\PlugIn\debug;
 
 use PMVC as p;
@@ -298,17 +299,19 @@ class debug extends p\PlugIn
             $args = !empty($v['args'])
                 ? $this->_parseArgus($v['args'], $console)
                 : '';
-            $name = $v['function'];
-            if ('handleError' === $name) {
+            $name = $this->_parseName($v);
+            if (!$name) {
+                continue;
+            }
+            if (0 === strpos($v['function'], 'call_user_func')) {
+                $v['call'] = $this->_parseCall($v);
+            }
+            if ('handleError' === $v['function']) {
                 if (E_USER_WARNING === \PMVC\value($v, ['args', 0])) {
                     $this->_dumpLevel = WARN;
                 } else {
                     $this->_dumpLevel = ERROR;
                 }
-            }
-            if (!empty($v['object'])) {
-                $name = get_class($v['object']) . $v['type'] . $name;
-                unset($v['object']);
             }
             if (!$keepArgs) {
                 unset($v['args']);
@@ -320,6 +323,32 @@ class debug extends p\PlugIn
         $raw = null;
         unset($raw, $k, $v);
         return $arr;
+    }
+
+    private function _parseCall($v)
+    {
+        $args0 = \PMVC\value($v, ['args', 0]);
+        $class = \PMVC\get($args0, 0);
+        if ($class) {
+            $call = [get_class($class), $args0[1]];
+        } else {
+            $call = $args0;
+        }
+        return $call;
+    }
+
+    private function _parseName(&$v)
+    {
+        $name = $v['function'];
+        if (!empty($v['object'])) {
+            $class = get_class($v['object']);
+            if ('PMVC\Adapter' === $class) {
+                return false;
+            }
+            $name = $class . $v['type'] . $name;
+            unset($v['object']);
+        }
+        return $name;
     }
 
     private function _parseArgus($a, $console)
