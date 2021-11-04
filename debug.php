@@ -296,9 +296,6 @@ class debug extends p\PlugIn
             } else {
                 $file = '[] ';
             }
-            $args = !empty($v['args'])
-                ? $this->_parseArgus($v['args'], $console)
-                : '';
             $name = $this->_parseName($v);
             if (!$name) {
                 continue;
@@ -309,18 +306,22 @@ class debug extends p\PlugIn
                     continue;
                 }
             }
+
+            $args = !empty($v['args'])
+                ? $this->_parseArgus($v['args'], $console)
+                : '';
             if ('handleError' === $v['function']) {
                 if (E_USER_WARNING === \PMVC\value($v, ['args', 0])) {
                     $this->_dumpLevel = WARN;
                 } else {
                     $this->_dumpLevel = ERROR;
                 }
-                $args = $v['args'];
+                $errArgs = $v['args'];
                 $v['error'] = [
-                  'no' => $args[0],
-                  'message'=>$args[1],
-                  'file' => $args[2],
-                  'line' => $args[3],
+                    'no' => $errArgs[0],
+                    'message' => $errArgs[1],
+                    'file' => $errArgs[2],
+                    'line' => $errArgs[3],
                 ];
                 unset($v['args']);
             } else {
@@ -328,6 +329,7 @@ class debug extends p\PlugIn
                     unset($v['args']);
                 }
             }
+
             unset($v['type']);
             $arr[$i . ': ' . $file . $name . '(' . $args . ')'] = $v;
             $i++;
