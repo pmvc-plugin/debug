@@ -349,12 +349,14 @@ class debug extends p\PlugIn
             $args = !empty($v['args'])
                 ? $this->_parseArgus($v['args'], $console)
                 : '';
+            $mark = null;
             if ('handleError' === $v['function']) {
                 if (E_USER_WARNING === \PMVC\value($v, ['args', 0])) {
                     $this->_dumpLevel = WARN;
                 } else {
                     $this->_dumpLevel = ERROR;
                 }
+                $mark = '* ';
                 $errArgs = $v['args'];
                 $v['error'] = [
                     'no' => $errArgs[0],
@@ -370,7 +372,7 @@ class debug extends p\PlugIn
             }
 
             unset($v['type']);
-            $arr[$i . ': ' . $file . $name . '(' . $args . ')'] = $v;
+            $arr[$i . ': ' . $mark . $file . $name . '(' . $args . ')'] = $v;
             $i++;
         }
         $raw = null;
