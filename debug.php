@@ -35,6 +35,9 @@ class debug extends p\PlugIn
     private $_level = null;
     private $_dumpLevel;
     private $_utf8;
+    private $_bInitTrace;
+    private $_keepArgs;
+    private $_debugAll;
 
     public function init()
     {
@@ -264,6 +267,34 @@ class debug extends p\PlugIn
         return trim(print_r($o, true));
     }
 
+    private function _initTrace()
+    {
+        if (!$this->_bInitTrace) {
+            \PMVC\dev(
+                /**
+                 * @help let trace information not demise args
+                 */
+                function () {
+                    $this->_bInitTrace = true;
+                    $this->_keepArgs = true;
+                    return 'Set keepArgs to true';
+                },
+                'debug-keep-args'
+            );
+            \PMVC\dev(
+                /**
+                 * @help let trace information not demise args
+                 */
+                function () {
+                    $this->_bInitTrace = true;
+                    $this->_debugAll = true;
+                    return 'Set debugAll to true';
+                },
+                'debug-all'
+            );
+        }
+    }
+
     public function parseTrace($raw, $sliceFrom = 0, $length = null)
     {
         if ($sliceFrom || $length) {
@@ -271,26 +302,20 @@ class debug extends p\PlugIn
         }
         $arr = [];
         $i = 1;
-        $keepArgs = false;
-        \PMVC\dev(
-            /**
-             * @help let trace information not demise args
-             */
-            function () use (&$keepArgs) {
-                $keepArgs = true;
-                return 'Set keepArgs to true';
-            },
-            'debug-keep-args'
-        );
+        $this->_initTrace();
         $console = $this->getOutput();
+        $debugAll = $this->_debugAll;
+        $keepArgs = $this->_keepArgs;
         foreach ($raw as $k => $v) {
             if (isset($v['file'])) {
                 $valFile = $v['file'];
-                if (false !== strrpos($valFile, '/pmvc/src/Alias.php')) {
-                    continue;
-                }
-                if (false !== strrpos($valFile, '/pmvc/src/Adapter.php')) {
-                    continue;
+                if (!$debugAll) {
+                    if (false !== strrpos($valFile, '/pmvc/src/Alias.php')) {
+                        continue;
+                    }
+                    if (false !== strrpos($valFile, '/pmvc/src/Adapter.php')) {
+                        continue;
+                    }
                 }
                 $file = '[' . basename($valFile) . '] ';
             } else {
@@ -342,7 +367,7 @@ class debug extends p\PlugIn
     private function _parseCall($v)
     {
         $args0 = \PMVC\value($v, ['args', 0]);
-        $class = \PMVC\get($args0, 0);
+        $class = \PMVC\isArray($args0) ? \PMVC\get($args0, 0) : null;
         if ($class) {
             $className = get_class($class);
             if ('PMVC\Adapter' === $className) {
