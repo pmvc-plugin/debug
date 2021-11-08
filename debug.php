@@ -38,6 +38,7 @@ class debug extends p\PlugIn
     private $_bInitTrace;
     private $_keepArgs;
     private $_debugAll;
+    private $_errorException;
 
     public function init()
     {
@@ -243,6 +244,7 @@ class debug extends p\PlugIn
     {
         if (is_a($object, 'Error')) {
             $this->_dumpLevel = ERROR;
+            $this->_errorException = $object;
             return true;
         }
         if (is_a($object, 'Exception')) {
@@ -306,6 +308,18 @@ class debug extends p\PlugIn
         $console = $this->getOutput();
         $debugAll = $this->_debugAll;
         $keepArgs = $this->_keepArgs;
+        if (isset($this->_errorException)) {
+            $errArgs = $this->_errorException;
+            $arr[] = [
+                'error' => [
+                    'no' => $errArgs->getCode(),
+                    'message' => $errArgs->getMessage(),
+                    'file' => $errArgs->getFile(),
+                    'line' => $errArgs->getLine(),
+                ],
+            ];
+            $this->_errorException = null;
+        }
         foreach ($raw as $k => $v) {
             if (isset($v['file'])) {
                 $valFile = $v['file'];
