@@ -66,7 +66,7 @@ class DebugConsoleTest extends TestCase
 
 class fakeOutput extends \PMVC\PlugIn implements DebugDumpInterface
 {
-    public function escape($string)
+    public function escape($string, $type = null)
     {
         return $string;
     }

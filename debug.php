@@ -220,7 +220,7 @@ class debug extends p\PlugIn
         }
         $console->dump($json, $errorLevel);
         unset($content, $message, $json);
-        $console->dump($trace, 'trace');
+        $console->dump($trace, TRACE);
         unset($trace, $console);
         $this->_dumpLevel = null;
     }
@@ -437,7 +437,8 @@ class debug extends p\PlugIn
             } else {
                 $param = strip_tags($param); // better memory usage.
                 $b[] = $console->escape(
-                    $this->_utf8->substr($param, 0, $this['truncate'])
+                    $this->_utf8->substr($param, 0, $this['truncate']),
+                    TRACE
                 );
             }
         }

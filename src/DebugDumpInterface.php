@@ -3,6 +3,6 @@ namespace PMVC\PlugIn\debug;
 
 interface DebugDumpInterface
 {
-    public function escape($s);
-    public function dump($p, $type='info');
+    public function escape($s, $type = null);
+    public function dump($p, $type = 'info');
 }
