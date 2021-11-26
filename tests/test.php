@@ -59,8 +59,7 @@ class DebugConsoleTest extends TestCase
             _CLASS => __NAMESPACE__ . '\fakeOutput',
         ]);
         $result = $debug->d(['a'], ['b']);
-        $this->haveString('[0] => a', $result);
-        $this->haveString('[0] => b', $result);
+        $this->assertEquals([['a'], ['b']], $result);
     }
 }
 

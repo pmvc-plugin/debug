@@ -170,21 +170,12 @@ class debug extends p\PlugIn
     public function d()
     {
         $a = func_get_args();
-        $a0 = $a[0];
-        if (
-            $this->isException($a0) ||
-            (1 === count($a) && \PMVC\testString($a0))
-        ) {
-            $tmp = $a0;
-        } else {
-            $tmp = print_r($a, true);
-        }
         if (!$this->run) {
             $this->run = true;
-            $this->dump($tmp);
+            $this->dump($a);
             $this->run = false;
         }
-        return $tmp;
+        return $a;
     }
 
     public function dump($content)
@@ -194,15 +185,19 @@ class debug extends p\PlugIn
             return;
         }
         $traceLength = $this['traceLength'] ? $this['traceLength'] : null;
-        if ($this->isException($content)) {
-            $message = $content->getMessage();
-            $trace = $this->parseTrace($content->getTrace(), 0, $traceLength);
+        if ($this->isException($content[0])) {
+            $allMessage = [$content[0]->getMessage()];
+            $trace = $this->parseTrace(
+                $content[0]->getTrace(),
+                0,
+                $traceLength
+            );
             $errorLevel = $this->_dumpLevel;
             if (is_null($errorLevel)) {
                 $errorLevel = WARN;
             }
         } else {
-            $message = &$content;
+            $allMessage = &$content;
             $trace = $this->parseTrace(
                 debug_backtrace(),
                 $this['traceFrom'],
@@ -214,12 +209,19 @@ class debug extends p\PlugIn
             }
         }
         $this->httpResponseCode(!in_array($errorLevel, [WARN, TRACE]));
-        $json = p\fromJson($message, true);
-        if (!is_array($json)) {
-            $json = $console->escape($message);
+        foreach ($allMessage as $message) {
+            if (p\testString($message)) {
+                $jMessage = p\fromJson($message, true);
+            } else {
+                $jMessage = print_r($message, true);
+            }
+            if (!is_array($jMessage)) {
+                $jMessage = $console->escape($jMessage);
+            }
+            $console->dump($jMessage, $errorLevel);
         }
-        $console->dump($json, $errorLevel);
-        unset($content, $message, $json);
+
+        unset($content, $allMessage, $message, $jMessage);
         $console->dump($trace, TRACE);
         unset($trace, $console);
         $this->_dumpLevel = null;
