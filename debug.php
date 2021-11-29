@@ -386,7 +386,7 @@ class debug extends p\PlugIn
     {
         $args0 = \PMVC\value($v, ['args', 0]);
         $class = \PMVC\isArray($args0) ? \PMVC\get($args0, 0) : null;
-        if ($class) {
+        if ($class && is_object($class)) {
             $className = get_class($class);
             if ('PMVC\Adapter' === $className) {
                 return false;
