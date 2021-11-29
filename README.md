@@ -27,6 +27,8 @@ PMVC debug tool
    * PHPUnit -> https://github.com/pmvc-plugin/dev/blob/master/tests/DevWithPhpUnitTest.php
 
 ## Install with Composer
+<details><summary>CLICK TO SEE</summary><p>
+
 ### 1. Download composer
    * mkdir test_folder
    * curl -sS https://getcomposer.org/installer | php
@@ -46,3 +48,8 @@ PMVC debug tool
 #### 2.2 Or use composer command-line
    * php composer.phar require pmvc-plugin/debug
 
+   or
+   
+   * composer require pmvc-plugin/debug
+
+</p></details>
