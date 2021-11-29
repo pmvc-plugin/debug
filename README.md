@@ -22,7 +22,7 @@ PMVC debug tool
       * if set -t and value is empty will force level to 'trace' 
          * such as "pmvc -t"
       * pmvc -tdebug  # it mean set to debug level.
-      * pmvc -t debug # same
+         * pmvc -t debug # same
    * hardcode -> \PMVC\plug('debug')->setLevel('xxx');
    * PHPUnit -> https://github.com/pmvc-plugin/dev/blob/master/tests/DevWithPhpUnitTest.php
 
