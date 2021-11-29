@@ -8,12 +8,13 @@ PMVC debug tool
 ===============
 
 ## Debug output plugin
-   1. https://github.com/pmvc-plugin/debug_console
-      * Use with browser console or json
-   1. https://github.com/pmvc-plugin/debug_store
+   1. Debug for browser console
+      * https://github.com/pmvc-plugin/debug_console
+   1. Debug with json output (API... etc view.)
+      * https://github.com/pmvc-plugin/debug_store
       * Use with view engine
-   1. https://github.com/pmvc-plugin/debug_cli
-      * Use with command line
+   1. Use with command line (Bash ... etc shell script)
+      * https://github.com/pmvc-plugin/debug_cli
 
 ## How to Trigger debug
    * http -> $_REQUEST['--trace']
