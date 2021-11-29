@@ -5,7 +5,7 @@ namespace PMVC\PlugIn\debug;
 use PMVC as p;
 use PMVC\Event;
 
-p\l(__DIR__ . '/src/DebugDumpInterface.php');
+p\l(__DIR__ . '/src/DebugDumpInterface');
 
 if (defined(__NAMESPACE__ . '\INPUT_FIELD')) {
     return;
@@ -386,8 +386,8 @@ class debug extends p\PlugIn
     {
         $args0 = \PMVC\value($v, ['args', 0]);
         $class = \PMVC\isArray($args0) ? \PMVC\get($args0, 0) : null;
-        if ($class && is_object($class)) {
-            $className = get_class($class);
+        if ($class) {
+            $className = is_object($class) ? get_class($class) : $class;
             if ('PMVC\Adapter' === $className) {
                 return false;
             }
