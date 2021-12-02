@@ -45,7 +45,7 @@ class debug extends p\PlugIn
         if (empty($this['truncate'])) {
             $this['truncate'] = 100;
         }
-        if (!strlen($this['traceFrom'])) {
+        if (empty($this['traceFrom'])) {
             $this['traceFrom'] = 6;
         }
         p\callPlugin('dispatcher', 'attach', [$this, Event\MAP_REQUEST]);
