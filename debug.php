@@ -110,12 +110,17 @@ class debug extends p\PlugIn
         return $result;
     }
 
+    private function _trimLevels($level)
+    {
+        return $level ? array_map('trim', explode(',', $level)) : [];
+    }
+
     public function getLevels($level = null)
     {
         if (is_null($level)) {
             $level = $this->_level;
         }
-        return $level ? array_map('trim', explode(',', $level)) : [];
+        return $this->_trimLevels($level);
     }
 
     public function setLevel($level, $force = true)
@@ -124,6 +129,12 @@ class debug extends p\PlugIn
             $this->_level = $level;
         }
         p\callPlugin('dispatcher', 'notify', ['resetDebugLevel']);
+    }
+
+    public function unsetLevel($level)
+    {
+        $arr = array_diff($this->_trimLevels($this->_level), [$level]);
+        $this->setLevel(join(',', $arr));
     }
 
     public function setOutput()

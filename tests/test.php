@@ -61,6 +61,14 @@ class DebugConsoleTest extends TestCase
         $result = $debug->d(['a'], ['b']);
         $this->assertEquals([['a'], ['b']], $result);
     }
+
+    public function testUnsetLevel()
+    {
+        $debug = \PMVC\plug($this->_plug);
+        $debug->setLevel('a, b, c');
+        $debug->unsetLevel('b');
+        $this->assertEquals(['a', 'c'], $debug->getLevels());
+    }
 }
 
 class fakeOutput extends \PMVC\PlugIn implements DebugDumpInterface
