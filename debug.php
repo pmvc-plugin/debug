@@ -224,7 +224,11 @@ class debug extends p\PlugIn
             if (p\testString($message)) {
                 $jMessage = p\fromJson($message, true);
             } else {
-                $jMessage = print_r($message, true);
+                /**
+                 * Why use var_export not print_r?
+                 * print_r will not display boolean.
+                 */
+                $jMessage = var_export($message, true);
             }
             if (!is_array($jMessage)) {
                 $jMessage = $console->escape($jMessage);
