@@ -25,7 +25,6 @@ jobs:
       - run:
           name: Composer install packages
           command: |
-            composer update
             composer install --prefer-source
       - run:
           name: PHPUnit
