@@ -330,7 +330,7 @@ class debug extends p\PlugIn
             $arr[] = [
                 'error' => [
                     'no' => $errArgs->getCode(),
-                    'message' => $errArgs->getMessage(),
+                    'message' => \PMVC\fromJson($errArgs->getMessage()),
                     'file' => $errArgs->getFile(),
                     'line' => $errArgs->getLine(),
                 ],
@@ -377,7 +377,7 @@ class debug extends p\PlugIn
                 $errArgs = $v['args'];
                 $v['error'] = [
                     'no' => $errArgs[0],
-                    'message' => $errArgs[1],
+                    'message' => \PMVC\fromJson($errArgs[1]),
                     'file' => $errArgs[2],
                     'line' => $errArgs[3],
                 ];
